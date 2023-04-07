@@ -1,40 +1,37 @@
-import {Bot} from 'grammy';
-import {randomInteger} from "./utilities.js";
-import {TOKEN} from "./token.js"
+import { Bot, Context } from 'grammy';
+import { randomInteger } from "./utilities.js";
+import { TOKEN } from "./token.js";
 
-const bot = new Bot(TOKEN);
+class GemMinerBot {
+    private bot: Bot;
 
-bot.command("mine", (context) => {
-    if(context.message === undefined){
-        return;
+    constructor(token: string) {
+        this.bot = new Bot(token);
+        this.bot.command('mine', this.handleMineCommand.bind(this));
+        this.bot.start();
+        console.log('Bot created');
     }
-    const gems = randomInteger(-5, 10);
-    let word: string;
 
-    if(gems<0){
-        if(gems+1===0){
-            word = "gem";
+    private handleMineCommand = (ctx: Context): void => {
+        const gems = randomInteger(-5, 10);
+        const username = `@${ctx.message?.from.username}`;
+        const word = gems === 1 ? 'gem' : 'gems';
+
+        if (gems < 0) {
+            const lostGems = -gems;
+            const message = `${username}, you lost ${lostGems} ${word}...`;
+            ctx.reply(message);
+            console.log(`${username}: ${lostGems} ${word} lost`);
+        } else if (gems === 0) {
+            const message = `${username}, you got nothing.`;
+            ctx.reply(message);
+            console.log(`${username}: nothing`);
         } else {
-            word = "gems";
+            const message = `${username}, you got ${gems} ${word}!`;
+            ctx.reply(message);
+            console.log(`${username}: ${gems} ${word} mined`);
         }
-        context.reply(`@${context.message.from.username}, you lost ${-gems} ${word}...`);
-    }
+    };
+}
 
-    else if(gems===0){
-        context.reply(`@${context.message.from.username}, you got nothing.`);
-    }
-
-    else{
-        if(gems===1){
-            word = "gem"
-        } else {
-            word = "gems"}
-        context.reply(`@${context.message.from.username}, you got ${gems} ${word}!`);
-    }
-
-    console.log(`${context.message.from.username}: ${gems}`);
-});
-
-
-bot.start();
-console.log("Bot created");
+const bot = new GemMinerBot(TOKEN);
