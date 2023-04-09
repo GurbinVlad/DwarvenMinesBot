@@ -7,6 +7,7 @@ export class GemMinerBot {
     constructor(token: string) {
         this.bot = new Bot(token);
         this.bot.command('mine', this.handleMineCommand.bind(this));
+        this.bot.command('start', this.handleStartCommand.bind(this));
         console.log('Bot created');
     }
 
@@ -14,7 +15,16 @@ export class GemMinerBot {
         this.bot.start();
         console.log('Bot started');
     }
-    private handleMineCommand = (ctx: CommandContext<Context>): void => {
+
+    private handleStartCommand = (ctx:CommandContext<Context>): void => {
+        if(ctx.message === undefined){
+            return;
+        }
+        const message = `@${ctx.message.from.username}, welcome to Dwarven mines!\nUse the /mine command to go to the mine and try your luck!`
+        ctx.reply(message);
+    }
+
+    private handleMineCommand = (ctx:CommandContext<Context>): void => {
         if(ctx.message === undefined){
             return;
         }
@@ -24,11 +34,11 @@ export class GemMinerBot {
         let message: string;
         if (gems < 0) {
             const lostGems = -gems;
-            message = `${username}, you lost ${lostGems} ${word}...`;
+            message = `${username}, you lost ${lostGems} ${word}💎...`;
         } else if (gems === 0) {
             message = `${username}, you got nothing.`;
         } else {
-            message = `${username}, you got ${gems} ${word}!`;
+            message = `${username}, you got ${gems} ${word}💎!`;
         }
         ctx.reply(message);
         console.log(`${username}: ${gems}`);
