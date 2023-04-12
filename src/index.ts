@@ -1,7 +1,8 @@
 import {TOKEN} from "./token.js"
 import {GemMinerBot} from "./bot.js"
-import {connectToDb} from "./database/connection.js";
+import {Database} from "./database/database.js";
 
-const bot = new GemMinerBot(TOKEN);
-await connectToDb();
-await bot.botStart();
+const database = new Database();
+const bot = new GemMinerBot(TOKEN, database);
+await database.connect();
+await bot.start();
