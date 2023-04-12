@@ -5,16 +5,18 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && clear && node dist/index.js"
+    "start": "npm run build && node dist/index.js"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/node": "^18.15.11",
-    "typescript": "^5.0.3"
+    "typescript": "^5.0.4"
   },
   "dependencies": {
-    "grammy": "^1.15.3"
+    "grammy": "^1.15.3",
+    "mongodb": "^5.2.0",
+    "mongoose": "^7.0.3"
   },
   "type": "module"
 }
