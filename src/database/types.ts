@@ -1,15 +1,9 @@
-import { ObjectId, Collection } from 'mongodb'
-
 interface Player {
-    _id: ObjectId
-    userId: string
-    chatId: string
-
+    userId: number
+    chatId: number
     gemsCount: number
+    lastMined: Date
 }
 
-interface Database {
-    players: Collection <Player>
-}
+export { Player }
 
-export { Player, Database }
