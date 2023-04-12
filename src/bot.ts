@@ -11,20 +11,20 @@ export class GemMinerBot {
         console.log('Bot created');
     }
 
-    public botStart(): void{
-        this.bot.start();
+    public async botStart(): Promise<void> {
         console.log('Bot started');
+        await this.bot.start();
     }
 
-    private handleStartCommand = (ctx:CommandContext<Context>): void => {
+    private handleStartCommand = async (ctx: CommandContext<Context>): Promise<void> => {
         if(ctx.message === undefined){
             return;
         }
         const message = `@${ctx.message.from.username}, welcome to Dwarven mines!\nUse the /mine command to go to the mine and try your luck!`
-        ctx.reply(message);
+        await ctx.reply(message);
     }
 
-    private handleMineCommand = (ctx:CommandContext<Context>): void => {
+    private handleMineCommand = async (ctx: CommandContext<Context>): Promise<void> => {
         if(ctx.message === undefined){
             return;
         }
@@ -40,7 +40,7 @@ export class GemMinerBot {
         } else {
             message = `${username}, you got ${gems} ${word}💎!`;
         }
-        ctx.reply(message);
+        await ctx.reply(message);
         console.log(`${username}: ${gems}`);
     };
 }

@@ -4,4 +4,4 @@ import {connectToDb} from "./database/connection.js";
 
 const bot = new GemMinerBot(TOKEN);
 await connectToDb();
-bot.botStart();
+await bot.botStart();
