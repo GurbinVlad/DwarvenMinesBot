@@ -1,4 +1,4 @@
-import {TOKEN} from "./token.js"
+import {TOKEN} from "./config.js"
 import {GemMinerBot} from "./bot.js"
 import {Database} from "./database/database.js";
 
