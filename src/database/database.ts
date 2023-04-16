@@ -1,6 +1,7 @@
 import {Player} from './types.js';
 import {Collection, MongoClient} from 'mongodb';
 import {URL, dbName} from '../config.js'
+import {randomName} from "../utilities.js";
 
 export class Database {
     private client: MongoClient
@@ -26,7 +27,7 @@ export class Database {
     async getOrCreateUser(userId: Player['userId'], chatId: Player['chatId']):Promise<Player>{
         let result = await this.players.findOne({userId, chatId});
         if (result === null){
-            await this.players.insertOne({userId, chatId, heroName: '🚫', gemsCount: 0, lastMined: new Date(0)})
+            await this.players.insertOne({userId, chatId, heroName: randomName(), gemsCount: 0, lastMined: new Date(0)})
             return await this.getOrCreateUser(userId, chatId)
         }
         return result;
