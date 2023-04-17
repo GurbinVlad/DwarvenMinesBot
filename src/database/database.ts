@@ -38,7 +38,20 @@ export class Database {
             {$inc: { gemsCount: gems },
                     $set: { heroName: setName, lastMined: new Date() }})
     }
+
+    // Function for checking similar character names
+    async CheckUniqueName(chatId: Player['chatId'], setName: string) {
+        const players = await this.players.find({ chatId }).toArray();
+        return players.some((player) => player.heroName === setName);
+    }
+    //
+
+    // Function for rating
+    async findAllUser(chatId: Player['chatId']) {
+        let result2 = await this.players.find({chatId}).toArray();
+        return result2.sort((a, b) => b.gemsCount - a.gemsCount);
+
+    }
+    //
+
 }
-
-
-
