@@ -3,6 +3,7 @@ interface Player {
     chatId: number
     heroName : string
     gemsCount: number
+    moneyCount: number
     lastMined: Date
 }
 
