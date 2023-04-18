@@ -18,7 +18,17 @@ export let names: string[] = [
     "Flintlock",
     "Stonewall",
     "Ironclad",
-    "Durin"
+    "Durin",
+    "Forgebeard",
+    "Rockhammer",
+    "Stonebeard",
+    "Fireforge",
+    "Grimaxe",
+    "Thunderbeard",
+    "Stonebreaker",
+    "Ironforge",
+    "Mountainbrow",
+    "Battlehammer"
 ];
 
 export let characteristics: string[] = [
