@@ -27,17 +27,24 @@ export class Database {
     async getOrCreateUser(userId: Player['userId'], chatId: Player['chatId']):Promise<Player>{
         let result = await this.players.findOne({userId, chatId});
         if (result === null){
-            await this.players.insertOne({userId, chatId, heroName: randomName(), gemsCount: 0, lastMined: new Date(0)})
+            await this.players.insertOne({userId, chatId, heroName: randomName(), gemsCount: 0, moneyCount:0, lastMined: new Date(0)})
             return await this.getOrCreateUser(userId, chatId)
         }
         return result;
     }
 
-    async updateUser(userId: Player['userId'], chatId: Player['chatId'], setName: string, gems: number): Promise<void> {
+    async updateUser(userId: Player['userId'], chatId: Player['chatId'], setName: string, gems: number, coins?:number): Promise<void> {
+
         await this.players.updateOne({userId, chatId},
             {$inc: { gemsCount: gems },
                     $set: { heroName: setName, lastMined: new Date() }})
+        if(coins){
+            await this.players.updateOne({userId, chatId},
+                {$inc: {moneyCount: coins},
+                    $set: { gemsCount:gems}})
+        }
     }
+
 
     // Function for checking similar character names
     async CheckUniqueName(chatId: Player['chatId'], setName: string) {
@@ -47,10 +54,9 @@ export class Database {
     //
 
     // Function for rating
-    async findAllUser(chatId: Player['chatId']) {
-        let result2 = await this.players.find({chatId}).toArray();
-        return result2.sort((a, b) => b.gemsCount - a.gemsCount);
-
+    async findAllUsers(chatId: Player['chatId']) {
+        let result = await this.players.find({chatId}).toArray();
+        return result.sort((a, b) => (b.gemsCount*5 + b.moneyCount) - (a.gemsCount*5 + a.moneyCount));
     }
     //
 
