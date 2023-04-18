@@ -6,7 +6,7 @@ export function randomInteger(min: number, max: number) {
 }
 
 export function randomName(){
-    const name = names[randomInteger(1,19)];
-    const characteristic = characteristics[randomInteger(1,18)];
+    const name = names[randomInteger(0,29)];
+    const characteristic = characteristics[randomInteger(0,18)];
     return `${name} ${characteristic}`;
 }
