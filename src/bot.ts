@@ -81,7 +81,7 @@ See /help for all available commands in the game.
             await this.database.updateUser(ctx.message.from.id, ctx.message.chat.id, {
                 expCount: user.expCount + exp,
                 gemsCount: user.gemsCount + gems,
-                lastMined: new Date(0) } );
+                lastMined: new Date() } );
         }
 
         await ctx.reply(message);
