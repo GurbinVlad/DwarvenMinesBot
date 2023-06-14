@@ -222,7 +222,18 @@ See /help for all available commands in the game.
 
         await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id);
 
-        await ctx.reply("Dwarven Mines❗");
+        await ctx.reply("<b><i>Rules for game</i></b> \n" +
+            "\n" +
+            "<i>Hey! Are you our new mine explorer?</i> \n" +
+            "<i>Perfect! Let me explain you some details:</i> \n" +
+            "\n" +
+            "1️⃣ Our mines are full of different gems 💎, so you can try to find them all! 😁 \n" +
+            "2️⃣ Mining - is a dangerous activity ☠️. You must to be careful, if you don`t want to lost all your gems 🙃 \n" +
+            "3️⃣ Do not forget to sell your new gems!☝️ I know, that you`re very strong dwarf, but your backpack isn`t as good as you... 😅 \n" +
+            "4️⃣ Mines are very tiring, i know. At first, you will mine only once a day, but who knows, how enduring will you be?🤔 \n" +
+            "\n" +
+            "I think there are the most important things you should know. Good luck! Oh, one request: please, try not to die... 🙂",
+            { parse_mode: 'HTML' } );
     }
 
 
@@ -377,7 +388,7 @@ See /help for all available commands in the game.
                     moneyCount: user.moneyCount + coins } );
             }
         } else {
-            await ctx.reply(`You can exchange your 💎 for 💰 - (1 : 5)\nYour bag: <b>${ user.gemsCount }</b> 💎\n\n‼ Use /sell <code>AMOUNT</code> to sell ‼`, { parse_mode: 'HTML' } )
+            await ctx.reply(`You can exchange your 💎 for 💰 (1 : 5)\nYour bag: <b>${ user.gemsCount }</b> 💎\n\n‼ Use /sell <code>AMOUNT</code> to sell ‼`, { parse_mode: 'HTML' } )
             console.log(`@${ ctx.message.from.username }: entered the /sell command without additional parameters`);
             return;
         }
