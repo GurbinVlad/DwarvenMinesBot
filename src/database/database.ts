@@ -30,15 +30,14 @@ import { CommandContext, Context } from "grammy";
             process.exit(1)
         }
     }
-
+  
 
     async getOrCreateUser(userId: Player['userId'], chatId: Player['chatId']): Promise<Player> {
         let result = await this.players.findOne({ userId, chatId } );
         if (result === null) {
             await this.players.insertOne(
                 { userId, chatId, cooldown: 1 / 60, baglimit: 100, heroName: randomName(), playerLevel: 1, expCount: 0,
-                    newExp: 50, gemsCount: 0, moneyCount: 0, lastMined: new Date(0) }
-            ) /// By default, the "cooldown" will be 24, which corresponds to the 24-hour format for checking and setting the current time.
+                    newExp: 50, gemsCount: 0, moneyCount: 0, lastMined: new Date(0) } );
 
             return await this.getOrCreateUser(userId, chatId)
         }
@@ -92,7 +91,7 @@ import { CommandContext, Context } from "grammy";
                         return;
                     }
 
-                    await this.updateUser(messageFromId, messageFromChatId, { cooldown: lvl.cooldown - (1 / 60 / 3) } ); /// The expression "lvl.cooldown - 0" is due to the fact that the time format check is not set by default.
+                    await this.updateUser(messageFromId, messageFromChatId, { cooldown: lvl.cooldown - (1 / 60 / 3) } );
                     ctx.reply(`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${ lvl.playerLevel } \n\n📍Your bag capacity has been increased \n📍More trips to the mines are available to you` );
                 } else ctx.reply(`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${ lvl.playerLevel } \n\n📍Your bag capacity has been increased` );
             }
