@@ -36,7 +36,7 @@ import { CommandContext, Context } from "grammy";
         let result = await this.players.findOne({ userId, chatId } );
         if (result === null) {
             await this.players.insertOne(
-                { userId, chatId, cooldown: 1 / 60, baglimit: 100, heroName: randomName(), playerLevel: 1, expCount: 0,
+                { userId, chatId, cooldown: 24, baglimit: 100, heroName: randomName(), playerLevel: 1, expCount: 0,
                     newExp: 50, gemsCount: 0, moneyCount: 0, lastMined: new Date(0) } );
 
             return await this.getOrCreateUser(userId, chatId)
@@ -91,7 +91,7 @@ import { CommandContext, Context } from "grammy";
                         return;
                     }
 
-                    await this.updateUser(messageFromId, messageFromChatId, { cooldown: lvl.cooldown - (1 / 60 / 3) } );
+                    await this.updateUser(messageFromId, messageFromChatId, { cooldown: lvl.cooldown - 8 } );
                     ctx.reply(`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${ lvl.playerLevel } \n\n📍Your bag capacity has been increased \n📍More trips to the mines are available to you` );
                 } else ctx.reply(`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${ lvl.playerLevel } \n\n📍Your bag capacity has been increased` );
             }
