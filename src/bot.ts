@@ -38,7 +38,7 @@ export class GemMinerBot {
         }
 
         const currentTime = Date.now() / 1000;
-        if (currentTime - this.lastCommandTime < 2 ) {
+        if (currentTime - this.lastCommandTime < 1 ) {
             return;
         }
         this.lastCommandTime = currentTime;
@@ -62,7 +62,7 @@ See /help for all available commands in the game.
         }
 
         const currentTime = Date.now() / 1000;
-        if (currentTime - this.lastCommandTime < 2) {
+        if (currentTime - this.lastCommandTime < 1) {
             return;
         }
         this.lastCommandTime = currentTime;
@@ -125,7 +125,7 @@ See /help for all available commands in the game.
         }
 
         const currentTime = Date.now() / 1000;
-        if (currentTime - this.lastCommandTime < 2) {
+        if (currentTime - this.lastCommandTime < 1) {
             return;
         }
         this.lastCommandTime = currentTime;
@@ -150,7 +150,7 @@ See /help for all available commands in the game.
         }
 
         const currentTime = Date.now() / 1000;
-        if (currentTime - this.lastCommandTime < 2) {
+        if (currentTime - this.lastCommandTime < 1) {
             return;
         }
         this.lastCommandTime = currentTime;
@@ -190,7 +190,7 @@ See /help for all available commands in the game.
         }
 
         const currentTime = Date.now() / 1000;
-        if (currentTime - this.lastCommandTime < 2) {
+        if (currentTime - this.lastCommandTime < 1) {
             return;
         }
         this.lastCommandTime = currentTime;
@@ -215,7 +215,7 @@ See /help for all available commands in the game.
         }
 
         const currentTime = Date.now() / 1000;
-        if (currentTime - this.lastCommandTime < 2) {
+        if (currentTime - this.lastCommandTime < 1) {
             return;
         }
         this.lastCommandTime = currentTime;
@@ -243,7 +243,7 @@ See /help for all available commands in the game.
         }
 
         const currentTime = Date.now() / 1000;
-        if (currentTime - this.lastCommandTime < 2) {
+        if (currentTime - this.lastCommandTime < 1) {
             return;
         }
         this.lastCommandTime = currentTime;
@@ -268,7 +268,7 @@ See /help for all available commands in the game.
         }
 
         const currentTime = Date.now() / 1000;
-        if (currentTime - this.lastCommandTime < 2) {
+        if (currentTime - this.lastCommandTime < 1) {
             return;
         }
         this.lastCommandTime = currentTime;
@@ -293,7 +293,7 @@ See /help for all available commands in the game.
         }
 
         const currentTime = Date.now() / 1000;
-        if (currentTime - this.lastCommandTime < 2) {
+        if (currentTime - this.lastCommandTime < 1) {
             return;
         }
         this.lastCommandTime = currentTime;
@@ -356,7 +356,7 @@ See /help for all available commands in the game.
         }
 
         const currentTime = Date.now() / 1000;
-        if (currentTime - this.lastCommandTime < 2) {
+        if (currentTime - this.lastCommandTime < 1) {
             return;
         }
         this.lastCommandTime = currentTime;
