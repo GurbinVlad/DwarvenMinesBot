@@ -61,8 +61,8 @@ export let characteristics: string[] = [
 
 //////////////////////////////////////////  To establish situations in mines
 
-export let tempGems = 'chopa';
-export let tempExp = 'sipo';
+export let tempGems = 'sakdnsaojhdjhsdajhasjhdajshj';
+export let tempExp = 'sksahdskjhsdakhjksdahksadhkjs';
 export let goodSituations: string[] = [
     `dug in the mine for a long time and was finally able to get ${ tempGems }.`,
     `who had to fight the monsters in the mine finally won and found that some of them left behind ${ tempGems }.`,
