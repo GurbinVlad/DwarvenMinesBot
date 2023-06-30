@@ -30,16 +30,16 @@ import { CommandContext, Context } from "grammy";
             process.exit(1)
         }
     }
-  
 
-    async getOrCreateUser(userId: Player['userId'], chatId: Player['chatId']): Promise<Player> {
+
+    async getOrCreateUser( userId: Player['userId'], chatId: Player['chatId'] ): Promise<Player> {
         let result = await this.players.findOne({ userId, chatId } );
         if (result === null) {
             await this.players.insertOne(
                 { userId, chatId, cooldown: 24, baglimit: 100, heroName: randomName(), playerLevel: 1, expCount: 0,
-                    newExp: 50, gemsCount: 0, moneyCount: 0, lastMined: new Date(0) } );
+                    newExp: 20, expBarIndex: 0, gemsCount: 0, moneyCount: 0, lastMined: new Date(0) } );
 
-            return await this.getOrCreateUser(userId, chatId)
+            return await this.getOrCreateUser(userId, chatId);
         }
         return result;
     }
@@ -58,47 +58,58 @@ import { CommandContext, Context } from "grammy";
     }
 
 
-    async findAllRichestUsers(chatId: Player['chatId']){
+    async findAllRichestUsers( chatId: Player['chatId'] ){
         let result = await this.players.find({ chatId } ).toArray();
-        return result.sort((a, b) => (b.gemsCount * 5 + b.moneyCount) - (a.gemsCount * 5 + a.moneyCount));
+        return result.sort((a, b) => (b.gemsCount * 5 + b.moneyCount) - (a.gemsCount * 5 + a.moneyCount) );
     }
 
 
-     async findAllExperiencedUsers(chatId: Player['chatId']){
+     async findAllExperiencedUsers( chatId: Player['chatId'] ){
          let result = await this.players.find({ chatId } ).toArray();
          return result.sort((a, b) => (b.playerLevel * 1000 + b.expCount) - (a.playerLevel * 1000 + a.expCount) );
      }
 
 
-    async updateLevel(ctx: CommandContext<Context>, messageFromId: number, messageFromChatId: number, exp: number, username: string): Promise<void> {
-        const lvl = await this.getOrCreateUser( messageFromId, messageFromChatId );
+    async ifUpdateLevel(ctx: CommandContext<Context>, messageFromId: number, messageFromChatId: number, lvlArr: number[]): Promise<void> {
 
-        if(lvl) {
-            lvl.expCount + exp;
+        const user = await this.getOrCreateUser( messageFromId, messageFromChatId );
 
-            if (lvl.expCount == lvl.newExp) {
+        if( user ) {
+
+            if ( user.playerLevel + 1 > 10 && user.expCount >= user.newExp ) {
+
                 await this.updateUser(messageFromId, messageFromChatId, {
-                    playerLevel: lvl.playerLevel += 1,
-                    baglimit: lvl.baglimit + 5,
-                    newExp: lvl.newExp + 50,
-                    expCount: 0 } );
 
-                if(lvl.playerLevel % 5 === 0) {
+                    playerLevel: user.playerLevel + 1,
+                    baglimit: user.baglimit + 15,
+                    newExp: user.newExp + 510 } );
 
-                    if(lvl.playerLevel >= 15) {
-                        ctx.reply(`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${ lvl.playerLevel } \n\n📍Your bag capacity has been increased` );
-                        console.log(`Cooldown reduction rejected! The player ${ username } reached 15 lvl!`);
-                        return;
-                    }
+                await ctx.reply(`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${ user.playerLevel + 1 } \n\n📍Your bag capacity has been increased`);
 
-                    await this.updateUser(messageFromId, messageFromChatId, { cooldown: lvl.cooldown - 8 } );
-                    ctx.reply(`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${ lvl.playerLevel } \n\n📍Your bag capacity has been increased \n📍More trips to the mines are available to you` );
-                } else ctx.reply(`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${ lvl.playerLevel } \n\n📍Your bag capacity has been increased` );
-            }
+            } else if ( user.playerLevel <= 10 && user.expCount >= user.newExp ) {
+
+                            await this.updateUser( messageFromId, messageFromChatId, {
+
+                                playerLevel: user.playerLevel + 1,
+                                baglimit: user.baglimit + 5,
+                                expBarIndex: user.expBarIndex + 1,
+                                newExp: lvlArr[ user.expBarIndex + 1 ] } );
+
+                            if( user.playerLevel + 1 === 2 || user.playerLevel + 1 === 4 || user.playerLevel + 1 === 7 ) {
+                                await this.updateUser( messageFromId, messageFromChatId, { cooldown: user.cooldown - 2 } );
+                                await ctx.reply(`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${ user.playerLevel + 1 } \n\n📍Your bag capacity has been increased \n📍More trips to the mines are available to you` );
+                            } else if( user.playerLevel + 1 === 3 || user.playerLevel + 1 === 6 || user.playerLevel + 1 === 8 || user.playerLevel + 1 === 9 ) {
+                                await this.updateUser( messageFromId, messageFromChatId, { cooldown: user.cooldown - 1 } );
+                                await ctx.reply(`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${ user.playerLevel + 1 } \n\n📍Your bag capacity has been increased \n📍More trips to the mines are available to you` );
+                            } else if( user.playerLevel + 1 === 5 || user.playerLevel + 1 === 10 ) {
+                                await this.updateUser( messageFromId, messageFromChatId, { cooldown: user.cooldown - 3 } );
+                                await ctx.reply(`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${ user.playerLevel + 1 } \n\n📍Your bag capacity has been increased \n📍More trips to the mines are available to you` );
+                            }
+                } else return;
+
         } else {
-            console.log('Error in function updateLevel()!');
+            console.log('Error in function ifUpdateLevel()!');
             return;
         }
     }
-
 }

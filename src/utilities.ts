@@ -1,5 +1,6 @@
 import { characteristics, names, tempGems, tempExp, goodSituations, badSituations, neutralSituations } from "./templates.js"
 
+
 export function randomInteger(min: number, max: number) {
     min = Math.ceil(min);
     max = Math.floor(max);

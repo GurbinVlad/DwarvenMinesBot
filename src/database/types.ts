@@ -7,6 +7,7 @@ interface Player {
       playerLevel: number
       expCount: number
       newExp: number
+      expBarIndex: number
     gemsCount: number
     moneyCount: number
     lastMined: Date
