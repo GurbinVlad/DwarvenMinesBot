@@ -20,7 +20,16 @@ export class Migrations {
         for (const user of dataPlayers) {
             if (user.expCount >= 20) {
 
-                if (user.expCount >= 50 && user.expCount < 90) {
+                if (user.expCount >= 90 && user.expCount < 150) {
+                    updateData = {
+                        cooldown: 19,
+                        playerLevel: 4,
+                        baglimit: 115,
+                        newExp: 150,
+                        expBarIndex: 3,
+                        lastMined: new Date(0)
+                    };
+                } else if (user.expCount >= 50 && user.expCount < 90) {
                     updateData = {
                         cooldown: 21,
                         playerLevel: 3,
