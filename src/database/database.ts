@@ -4,8 +4,8 @@ import { randomName } from "../utilities.js";
 import { CommandContext, Context } from "grammy";
 
 
- export class Database {
-    private client: MongoClient
+export class Database {
+    private client: MongoClient;
     private players: Collection<Player>;
 
 
@@ -70,7 +70,7 @@ import { CommandContext, Context } from "grammy";
      }
 
 
-    async ifUpdateLevel(ctx: CommandContext<Context>, messageFromId: number, messageFromChatId: number, lvlArr: number[]): Promise<void> {
+    async ifUpdateLevel( ctx: CommandContext<Context>, messageFromId: number, messageFromChatId: number, lvlArr: number[] ): Promise<void> {
 
         const user = await this.getOrCreateUser( messageFromId, messageFromChatId );
 
@@ -105,10 +105,10 @@ import { CommandContext, Context } from "grammy";
                                 await this.updateUser( messageFromId, messageFromChatId, { cooldown: user.cooldown - 3 } );
                                 await ctx.reply(`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${ user.playerLevel + 1 } \n\n📍Your bag capacity has been increased \n📍More trips to the mines are available to you` );
                             }
-                } else return;
+                }
 
         } else {
-            console.log('Error in function ifUpdateLevel()!');
+            console.error('User not found!');
             return;
         }
     }
