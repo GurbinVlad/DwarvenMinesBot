@@ -32,5 +32,5 @@ export function randomSituationInMines(heroName: string, gems: number, exp: numb
 
     return `<b>${ heroName }</b> ${ situations[randomInteger(0, situations.length - 1) ] } ${ result }`
         .replaceAll( tempGems, `<b>${ gems }💎</b>`)
-        .replaceAll(tempExp, `<b>${ exp }🎮</b>`);
+        .replaceAll(tempExp, `<b>${ exp } ⭐️</b>`);
 }

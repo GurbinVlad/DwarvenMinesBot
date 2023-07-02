@@ -171,11 +171,11 @@ See /help for all available commands in the game.
 
         if ( user.gemsCount === user.baglimit ) {
             await ctx.reply(`<b>${ user.heroName }</b> 👾\n
-🎯 Level: ${ user.playerLevel }    🎮 ${ user.expCount } / ${ user.newExp } \n\n💎 ${ user.gemsCount } / ${ user.baglimit }   💰 ${ user.moneyCount }\n
+🏅 Level: ${ user.playerLevel }    ⭐️ ${ user.expCount } / ${ user.newExp } \n\n💎 ${ user.gemsCount } / ${ user.baglimit }   💰 ${ user.moneyCount }\n
 ‼ Your bag is full. Sell gems ‼`, { parse_mode: 'HTML' } );
         } else {
             await ctx.reply(`<b>${ user.heroName }</b> 👾\n
-🎯 Level: ${ user.playerLevel }    🎮 ${ user.expCount } / ${ user.newExp } \n\n💎 ${ user.gemsCount } / ${ user.baglimit }   💰 ${ user.moneyCount }`,
+🏅 Level: ${ user.playerLevel }    ⭐️ ${ user.expCount } / ${ user.newExp } \n\n💎 ${ user.gemsCount } / ${ user.baglimit }   💰 ${ user.moneyCount }`,
                 { parse_mode: 'HTML' } );
         }
     }
@@ -315,7 +315,7 @@ See /help for all available commands in the game.
         let ratingForExperienced = await this.database.findAllExperiencedUsers(ctx.message.chat.id);
         let ratingStringsForExperienced = ratingForExperienced.map((player, index) => {
             let emoji = index === 0 ? '👑' : '';
-            return `${ index + 1 }. ${ emoji } ${ player.heroName }  -  🎯 <b>${ player.playerLevel }</b>  🎮 <b>${ player.expCount } / ${ player.newExp }</b>`;
+            return `${ index + 1 }. ${ emoji } ${ player.heroName }  -  🏅 <b>${ player.playerLevel }</b>  ⭐️ <b>${ player.expCount } / ${ player.newExp }</b>`;
         });
 
         let ratingMessageForExperienced = ratingStringsForExperienced.length > 0 ? ratingStringsForExperienced.join("\n") : "<i>‼ No players found ‼</i>";
@@ -374,12 +374,12 @@ See /help for all available commands in the game.
             } else if (index === 2) {
                 emoji = '🥉';
             }
-            return `${ emoji } ${ player.heroName }  -  🎯 <b>${ player.playerLevel }</b>  🎮 <b>${ player.expCount } / ${ player.newExp }</b>`;
+            return `${ emoji } ${ player.heroName }  -  🏅 <b>${ player.playerLevel }</b>  ⭐️ <b>${ player.expCount } / ${ player.newExp }</b>`;
         });
 
         let ratingMessageForExperienced = ratingStringsForExperienced.length > 0 ? ratingStringsForExperienced.join("\n") : "<i>‼ No players found ‼</i>";
         let currentUserPlaceExperienced = currentUserIndexExperienced !== -1 ?
-            currentUserIndexExperienced + 1 + `. You  -  🎯 ${ findCurrentUserData?.playerLevel }  🎮 ${ findCurrentUserData?.expCount } / ${ findCurrentUserData?.newExp }`  : '👤You - Unrated ⛔';
+            currentUserIndexExperienced + 1 + `. You  -  🏅 ${ findCurrentUserData?.playerLevel }  ⭐️ ${ findCurrentUserData?.expCount } / ${ findCurrentUserData?.newExp }`  : '👤You - Unrated ⛔';
 
         /////////////////////////////////////////////// Out
 
