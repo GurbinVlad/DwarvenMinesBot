@@ -105,10 +105,10 @@ See /help for all available commands in the game.
             gems = randomInteger( -5, 15 );
             exp = randomInteger( 20, 25 );
         } else if ( user.playerLevel >= 5 ) {
-            gems = randomInteger( -5, 12 );
+            gems = randomInteger( -7, 12 );
             exp = randomInteger( 10, 20 );
         } else {
-            gems = randomInteger( -5, 10 );
+            gems = randomInteger( -9, 10 );
             exp = randomInteger( 5, 10 );
         }
 
