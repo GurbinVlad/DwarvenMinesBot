@@ -1,7 +1,6 @@
 import { Bot, CommandContext, Context } from "grammy";
 import { randomInteger, randomSituationInMines } from "./utilities.js";
 import { Database } from "./database/database.js";
-import { Migrations } from "./database/migrations.js";
 
 export class GemMinerBot {
 
@@ -10,7 +9,7 @@ export class GemMinerBot {
     private lvlArr: number[] = [ 20, 50, 90, 150, 230, 340, 450, 560, 670, 780 ];
 
 
-    constructor( token: string, private database: Database, private migrations: Migrations ) {
+    constructor( token: string, private database: Database ) {
         this.bot = new Bot( token );
         this.bot.command('start', this.handleStartCommand.bind( this ) );
         this.bot.command('name', this.handleSetNameCommand.bind( this ) );
@@ -29,7 +28,6 @@ export class GemMinerBot {
     public async start(): Promise<void> {
         let date: Date = new Date();
         console.log(`Bot started [ ${ date } ]`);
-        await this.migrations.migrate();
         await this.bot.start();
     }
 

@@ -29,6 +29,7 @@ export class Migrations {
                         expBarIndex: 3,
                         lastMined: new Date(0)
                     };
+
                 } else if (user.expCount >= 50 && user.expCount < 90) {
                     updateData = {
                         cooldown: 21,

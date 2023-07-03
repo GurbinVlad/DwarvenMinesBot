@@ -1,4 +1,4 @@
-////////////////////////////////////////// To establish a name for a Dwarf
+////////////////////////////////////////// To establish a name for a Dwarven
 
 export let names: string[] = [
     "Gruff",

@@ -1,7 +1,6 @@
 import { config } from "dotenv";
 import { GemMinerBot } from "./bot.js"
 import { Database } from "./database/database.js";
-import { Migrations } from "./database/migrations.js";
 
 config();
 
@@ -11,8 +10,7 @@ if (!process.env.TOKEN) {
 }
 
 const database = new Database();
-const migrations = new Migrations();
-const bot = new GemMinerBot(process.env.TOKEN, database, migrations);
+const bot = new GemMinerBot(process.env.TOKEN, database);
 
 await database.connect();
 await bot.start();
