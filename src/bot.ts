@@ -9,7 +9,7 @@ export class GemMinerBot {
     private lvlArr: number[] = [ 20, 50, 90, 150, 230, 340, 450, 560, 670, 780 ];
 
 
-    constructor( token: string, private database: Database ) {
+    constructor( token: string, private database: Database) {
         this.bot = new Bot( token );
         this.bot.command('start', this.handleStartCommand.bind( this ) );
         this.bot.command('name', this.handleSetNameCommand.bind( this ) );
@@ -439,4 +439,5 @@ See /help for all available commands in the game.
             return;
         }
     }
+
 }

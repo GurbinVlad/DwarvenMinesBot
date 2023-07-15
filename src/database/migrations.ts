@@ -1,9 +1,16 @@
 import { Collection, MongoClient } from 'mongodb';
 import { Player } from "./types.js";
+import { config } from "dotenv";
 
+await config();
 
-let client = new MongoClient('mongodb://127.0.0.1:27017');
-let players: Collection<Player> = client.db('coursework').collection('Players');
+if (!process.env.URL || !process.env.dbName) {
+    console.error(`URL or dbName not found`);
+    process.exit(1);
+}
+
+const client = new MongoClient(process.env.URL);
+const players: Collection<Player> = client.db(process.env.dbName).collection('Players');
 
 async function migrate() {
 
@@ -17,7 +24,7 @@ async function migrate() {
                 updateData = {
                     cooldown: 19,
                     playerLevel: 4,
-                    baglimit: 115,
+                    baglimit: 25,
                     newExp: 150,
                     expBarIndex: 3,
                     lastMined: new Date(0)
@@ -27,7 +34,7 @@ async function migrate() {
                 updateData = {
                     cooldown: 21,
                     playerLevel: 3,
-                    baglimit: 110,
+                    baglimit: 20,
                     newExp: 90,
                     expBarIndex: 2,
                     lastMined: new Date(0)
@@ -36,7 +43,7 @@ async function migrate() {
             } else updateData = {
                 cooldown: 22,
                 playerLevel: 2,
-                baglimit: 105,
+                baglimit: 15,
                 newExp: 50,
                 expBarIndex: 1,
                 lastMined: new Date(0)
@@ -51,7 +58,7 @@ async function migrate() {
             updateData = {
                 cooldown: 24,
                 playerLevel: 1,
-                baglimit: 100,
+                baglimit: 10,
                 newExp: 20,
                 expBarIndex: 0,
                 lastMined: new Date(0)
