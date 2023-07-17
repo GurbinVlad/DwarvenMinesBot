@@ -14,4 +14,3 @@ interface Player {
 }
 
 export { Player }
-
