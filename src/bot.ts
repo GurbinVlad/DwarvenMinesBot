@@ -257,8 +257,8 @@ See /help for all available commands in the game.
             "\n▫/top_money — Rating of the richest players" +
             "\n▫/top_exp — Rating of the mosy experienced players" +
             "\n▫/tops — General rating with prize places" +
-            "\n▫/sell <code>AMOUNT</code> — Exchange gems 💎 for coins 💰" +
-            "\n▫/send <code>AMOUNT</code> — Transfer 💰 to other players. Time limit for transfers - no more than 1 transfer within 12 hours. Transfers only from 5💰"
+            "\n▫/sell <code>AMOUNT</code> — Exchange gems 💎 for coins 💰 (/sell for info)" +
+            "\n▫/send <code>AMOUNT</code> — Transfer 💰 to other players (/send for info)"
             , { parse_mode: 'HTML' } );
     }
 
