@@ -15,19 +15,19 @@ export class Database {
             process.exit(1);
         }
 
-        this.client = new MongoClient(process.env.URL)
-        const mongoDb = this.client.db(process.env.dbName)
-        this.players = mongoDb.collection('Players')
+        this.client = new MongoClient(process.env.URL);
+        const mongoDb = this.client.db(process.env.dbName);
+        this.players = mongoDb.collection('Players');
     }
 
 
     async connect(){
         try {
             await this.client.connect()
-            console.log('Database connection successful Bro!')
+            console.log('Database connection successful Bro!');
         } catch (error) {
-            console.error('Database connection failed Bro:', error)
-            process.exit(1)
+            console.error('Database connection failed Bro:', error);
+            process.exit(1);
         }
     }
 
@@ -36,11 +36,12 @@ export class Database {
         let result = await this.players.findOne({ userId, chatId } );
         if (result === null) {
             await this.players.insertOne(
-                { userId, chatId, cooldown: 24, baglimit: 100, heroName: randomName(), playerLevel: 1, expCount: 0,
-                    newExp: 20, expBarIndex: 0, gemsCount: 0, moneyCount: 0, lastMined: new Date(0) } );
+                { userId, chatId, cooldown: 24, baglimit: 10, heroName: randomName(), playerLevel: 1, expCount: 0,
+                    newExp: 20, expBarIndex: 0, gemsCount: 0, moneyCount: 0, lastMined: new Date(0), lastSend: new Date(0) } );
 
             return await this.getOrCreateUser(userId, chatId);
         }
+
         return result;
     }
 
@@ -111,6 +112,12 @@ export class Database {
             console.error('User not found!');
             return;
         }
+    }
+
+
+    async ensurePlayerExists(playerId: Player['userId'], chatId: Player['chatId'] ): Promise<Player | null> {
+        const result = await this.players.findOne({ userId: playerId, chatId: chatId } );
+        return result;
     }
 
 }

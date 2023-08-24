@@ -11,6 +11,7 @@ interface Player {
     gemsCount: number
     moneyCount: number
     lastMined: Date
+    lastSend: Date
 }
 
 export { Player }

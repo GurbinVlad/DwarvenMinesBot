@@ -18,7 +18,17 @@ async function migrate() {
     let updateData;
 
     for (const user of dataPlayers) {
-        if (user.expCount >= 20) {
+
+        ////////////////// To add a new field //////////////////
+        updateData = { lastSend: new Date(0) };
+
+        await players.updateOne(
+            { _id: user._id },
+            { $set: updateData }
+        );
+        ////////////////////////////////////////////////////////
+
+        /*if (user.expCount >= 20) {
 
             if (user.expCount >= 90 && user.expCount < 150) {
                 updateData = {
@@ -68,7 +78,7 @@ async function migrate() {
                 { _id: user._id },
                 { $set: updateData }
             );
-        }
+        }*/
     }
 }
 

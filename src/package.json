@@ -19,6 +19,7 @@
     "grammy": "^1.15.3",
     "mongodb": "^5.2.0",
     "mongoose": "^7.0.3",
+    "node-telegram-bot-api": "^0.61.0",
     "telegraf": "^4.12.2"
   },
   "type": "module"
