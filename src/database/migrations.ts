@@ -2,7 +2,7 @@ import { Collection, MongoClient } from 'mongodb';
 import { Player } from "./types.js";
 import { config } from "dotenv";
 
-await config();
+config();
 
 if (!process.env.URL || !process.env.dbName) {
     console.error(`URL or dbName not found`);
@@ -17,16 +17,109 @@ async function migrate() {
     let dataPlayers = await players.find().toArray();
     let updateData;
 
-    for (const user of dataPlayers) {
+    for (let user of dataPlayers) {
 
-        ////////////////// To add a new field //////////////////
-        updateData = { lastSend: new Date(0) };
+        ////////////////// Add new fields or set new values for them //////////////////
+
+        if (user.heroName == 'It was terrible when I') {
+
+            updateData = {
+                lastSend: new Date(0),
+                counterOfSentCoins: 1 + 1 + 1 + 1 + 1,
+                amountOfSentCoins: 5 + 5 + 123 + 6 + 10,
+                counterOfReceivedCoins: 1,
+                amountOfReceivedCoins: 123,
+                coinPicked: false
+            };
+
+        } else if (user.heroName == '👑 Monke') {
+
+            updateData = {
+                lastSend: new Date(0),
+                counterOfSentCoins: 0,
+                amountOfSentCoins: 0,
+                counterOfReceivedCoins: 1 + 1 + 1 + 1 + 1,
+                amountOfReceivedCoins: 5 + 6 + 6 + 8 + 10,
+                coinPicked: false
+            };
+
+        } else if (user.heroName == 'Sid') {
+
+            updateData = {
+                lastSend: new Date(0),
+                counterOfSentCoins: 1,
+                amountOfSentCoins: 6,
+                counterOfReceivedCoins: 1 + 1,
+                amountOfReceivedCoins: 5 + 7,
+                coinPicked: false
+            };
+
+        } else if (user.heroName == 'Gangster') {
+
+            updateData = {
+                lastSend: new Date(0),
+                counterOfSentCoins: 1,
+                amountOfSentCoins: 123,
+                counterOfReceivedCoins: 1,
+                amountOfReceivedCoins: 123,
+                coinPicked: false
+            };
+
+        } else if (user.heroName == 'Minecraft') {
+
+            updateData = {
+                lastSend: new Date(0),
+                counterOfSentCoins: 1 + 1,
+                amountOfSentCoins: 7 + 8,
+                counterOfReceivedCoins: 0,
+                amountOfReceivedCoins: 0,
+                coinPicked: false
+            };
+
+        } else if (user.heroName == 'Slavutich') {
+
+            updateData = {
+                lastSend: new Date(0),
+                counterOfSentCoins: 1,
+                amountOfSentCoins: 19,
+                counterOfReceivedCoins: 0,
+                amountOfReceivedCoins: 0,
+                coinPicked: false
+            };
+
+        } else if (user.heroName == 'Miner2000') {
+
+            updateData = {
+                lastSend: new Date(0),
+                counterOfSentCoins: 0,
+                amountOfSentCoins: 0,
+                counterOfReceivedCoins: 1,
+                amountOfReceivedCoins: 19,
+                coinPicked: false
+            };
+
+        } else {
+
+            updateData = {
+                lastSend: new Date(0),
+                counterOfSentCoins: 0,
+                amountOfSentCoins: 0,
+                counterOfReceivedCoins: 0,
+                amountOfReceivedCoins: 0,
+                coinPicked: false
+            };
+
+        }
 
         await players.updateOne(
             { _id: user._id },
             { $set: updateData }
         );
-        ////////////////////////////////////////////////////////
+
+        ///////////////////////////////////////////////////////////////////////////////
+
+
+        /////////////////////////Changing experience data//////////////////////////////
 
         /*if (user.expCount >= 20) {
 
@@ -79,6 +172,28 @@ async function migrate() {
                 { $set: updateData }
             );
         }*/
+
+        ///////////////////////////////////////////////////////////////////////////////////
+
+
+        ////////////////// To add a new field //////////////////
+
+        /*updateData = {
+            lastSend: new Date(0),
+            counterOfSentCoins: 0,
+            amountOfSentCoins: 0,
+            counterOfReceivedCoins: 0,
+            amountOfReceivedCoins: 0,
+            coinPicked: false
+        };
+
+        await players.updateOne(
+            { _id: user._id },
+            { $set: updateData }
+        );*/
+
+        ////////////////////////////////////////////////////////
+
     }
 }
 

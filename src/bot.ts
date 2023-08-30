@@ -1,6 +1,7 @@
-import { Bot, CommandContext, Context } from "grammy";
+import {Bot, CallbackQueryContext, CommandContext, Context } from "grammy";
 import { randomInteger, randomSituationInMines } from "./utilities.js";
 import { Database } from "./database/database.js";
+
 
 export class GemMinerBot {
 
@@ -12,18 +13,26 @@ export class GemMinerBot {
     constructor( token: string, private database: Database) {
         this.bot = new Bot( token );
         this.bot.command('start', this.handleStartCommand.bind( this ) );
-        this.bot.command('name', this.handleSetNameCommand.bind( this ) );
         this.bot.command('help', this.handleHelpCommand.bind( this ) );
         this.bot.command('rules', this.handleRulesCommand.bind( this ) );
-        this.bot.command('mine', this.handleMineCommand.bind( this ) );
-        this.bot.command('grow', this.handleGrowCommand.bind( this ) );
         this.bot.command('profile', this.handleProfileCommand.bind( this ) );
+        this.bot.command('name', this.handleSetNameCommand.bind( this ) );
+        this.bot.command('mine', this.handleMineCommand.bind( this ) );
+        this.bot.command('top_help', this.handleTopHelpCommand.bind( this ) );
         this.bot.command('top_money', this.handleRichestCommand.bind( this ) );
         this.bot.command('top_exp', this.handleExperiencedCommand.bind( this ) );
+        this.bot.command('top_senders', this.handleTopSendCommand.bind( this ) );
+        this.bot.command('top_receivers', this.handleTopReceiptCommand.bind( this ) );
         this.bot.command('tops', this.handleTopsCommand.bind( this ) );
+        this.bot.command('tops_transfer', this.handleTopsTransferCommand.bind( this ) );
         this.bot.command('sell', this.handleSellCommand.bind( this ) );
         this.bot.command('send', this.handleSendCommand.bind( this ) );
+        this.bot.command('grow', this.handleGrowCommand.bind( this ) );
+
+        this.bot.callbackQuery(/(confirm|cancel)~\d+~\d+~[A-Za-z0-9_]+~(-)?\d+~\d+~\d+~\d+/, this.handlePaymentConfirmClick.bind( this ) );
+
         console.log('Bot created');
+
     }
 
 
@@ -31,6 +40,31 @@ export class GemMinerBot {
         let date: Date = new Date();
         console.log(`Bot started [ ${ date } ]`);
         await this.bot.start();
+    }
+
+
+    private handleGrowCommand = async (ctx: CommandContext<Context>): Promise<void> => {
+        if (ctx.message === undefined) {
+            return ;
+        }
+
+        if (ctx.message.from?.username) {
+            await ctx.reply(` @${ ctx.message.from.username } 👇 👇 👇\n\n🐷🐖🐖🐷 ⚠ NO PIGS!!! ⚠ 🐷🐖🐖🐷
+\n\nBetter use "/mine" command!`);
+            await ctx.replyWithSticker('CAACAgIAAxkBAAEO875k5delH0FE8AABWMZQfleZP65HVR4AAqYWAAKcVxFKW3flXLipYvcwBA');
+        } else {
+            if (ctx.message.from?.last_name) {
+                await ctx.reply(`${ ctx.message.from.first_name } ${ ctx.message.from.last_name } 👇 👇 👇\n\n🐷🐖🐖🐷 ⚠ NO PIGS!!! ⚠ 🐷🐖🐖🐷
+\n\nBetter use "/mine" command!`);
+                await ctx.replyWithSticker('CAACAgIAAxkBAAEO875k5delH0FE8AABWMZQfleZP65HVR4AAqYWAAKcVxFKW3flXLipYvcwBA');
+            } else {
+                await ctx.reply(`${ ctx.message.from.first_name } 👇 👇 👇\n\n🐷🐖🐖🐷 ⚠ NO PIGS!!! ⚠ 🐷🐖🐖🐷
+\n\nBetter use "/mine" command!`);
+                await ctx.replyWithSticker('CAACAgIAAxkBAAEO875k5delH0FE8AABWMZQfleZP65HVR4AAqYWAAKcVxFKW3flXLipYvcwBA');
+            }
+        }
+
+        return;
     }
 
 
@@ -157,16 +191,6 @@ See /help for all available commands in the game.
     }
 
 
-    private handleGrowCommand = async (ctx: CommandContext<Context>): Promise<void> => {
-        if (ctx.message === undefined) {
-            return ;
-        }
-
-        await ctx.reply(` @${ ctx.message.from.username } 👇 👇 👇\n\n🐖🐖🐖🐖🐖🐖 ⚠ NO PIGS!!! ⚠ 🐖🐖🐖🐖🐖🐖 `);
-        await ctx.replyWithSticker('CAACAgIAAxkBAAEO875k5delH0FE8AABWMZQfleZP65HVR4AAqYWAAKcVxFKW3flXLipYvcwBA');
-    }
-
-
     private handleProfileCommand = async (ctx: CommandContext<Context>): Promise<void> => {
         if(ctx.message === undefined) {
             return;
@@ -254,12 +278,37 @@ See /help for all available commands in the game.
             "\n▫/name <code>NAME</code> — Update dwarf name. Limit - 30 characters" +
             "\n▫/mine — Go to mine" +
             "\n▫/profile — Dwarf profile" +
-            "\n▫/top_money — Rating of the richest players" +
-            "\n▫/top_exp — Rating of the mosy experienced players" +
-            "\n▫/tops — General rating with prize places" +
+            "\n▫/top_help — list of accessible commands for rating with a brief description" +
             "\n▫/sell <code>AMOUNT</code> — Exchange gems 💎 for coins 💰 (/sell for info)" +
             "\n▫/send <code>AMOUNT</code> — Transfer 💰 to other players (/send for info)"
             , { parse_mode: 'HTML' } );
+    }
+
+
+    private handleTopHelpCommand = async (ctx: CommandContext<Context>): Promise<void> => {
+
+        if(ctx.message === undefined) {
+            return;
+        }
+
+        const currentTime = Date.now() / 1000;
+        if (currentTime - this.lastCommandTime < 1) {
+            return;
+        }
+        this.lastCommandTime = currentTime;
+
+        await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id);
+
+        await ctx.reply("📜 List commands for rating 📜\n" +
+            "\n▫/top_money — Rating of the richest players" +
+            "\n▫/top_exp — Rating of the mosy experienced players" +
+            "\n▫/top_senders — Sender rating" +
+            "\n▫/top_receivers — Recipient rating" +
+            "\n▫/tops — Overall rating with money and experience prizes" +
+            "\n▫/tops_transfer — Overall rating with prizes for the best senders and recipients"
+        );
+
+
     }
 
 
@@ -304,7 +353,7 @@ See /help for all available commands in the game.
 
         await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id);
 
-        let ratingForRichest = await this.database.findAllRichestUsers(ctx.message.chat.id);
+        let ratingForRichest = await this.database.findAllRichestPlayers(ctx.message.chat.id);
         let ratingStringsForRichest = ratingForRichest.map((player, index) => {
             let emoji = index === 0 ? '👑' : '';
             return `${ index + 1 }.${ emoji } ${ player.heroName }  -  💎 <b>${ player.gemsCount }</b>  💰 <b>${ player.moneyCount }</b>`;
@@ -329,7 +378,7 @@ See /help for all available commands in the game.
 
         await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id);
 
-        let ratingForExperienced = await this.database.findAllExperiencedUsers(ctx.message.chat.id);
+        let ratingForExperienced = await this.database.findAllExperiencedPlayers(ctx.message.chat.id);
         let ratingStringsForExperienced = ratingForExperienced.map( (player, index) => {
             let emoji = index === 0 ? '👑' : '';
             return `${ index + 1 }.${ emoji } ${ player.heroName }  -  🏅 <b>${ player.playerLevel }</b>  ⭐️ <b>${ player.expCount } / ${ player.newExp }</b>`;
@@ -342,6 +391,7 @@ See /help for all available commands in the game.
 
 
     private handleTopsCommand = async (ctx: CommandContext<Context>): Promise<void> => {
+
         if(ctx.message === undefined) {
             return;
         }
@@ -353,11 +403,11 @@ See /help for all available commands in the game.
         this.lastCommandTime = currentTime;
 
         await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id);
+        const limitUsers: number = 3;
 
         /////////////////////////////////////////////// For riches
 
-        const limitUsers: number = 3;
-        let ratingForRichest = await this.database.findAllRichestUsers(ctx.message.chat.id);
+        let ratingForRichest = await this.database.findAllRichestPlayers(ctx.message.chat.id);
         let currentUserIndexRichest = ratingForRichest.findIndex(player => player.userId === ctx.message.from.id);
         let findCurrentUserData = ratingForRichest.find(player => player.userId === ctx.message.from.id);
         ratingForRichest = ratingForRichest.slice(0, limitUsers);
@@ -379,7 +429,7 @@ See /help for all available commands in the game.
 
         /////////////////////////////////////////////// For experienced
 
-        let ratingForExperienced = await this.database.findAllExperiencedUsers(ctx.message.chat.id);
+        let ratingForExperienced = await this.database.findAllExperiencedPlayers(ctx.message.chat.id);
         let currentUserIndexExperienced = ratingForExperienced.findIndex(player => player.userId === ctx.message.from.id);
         ratingForExperienced = ratingForExperienced.slice(0, limitUsers);
         let ratingStringsForExperienced = ratingForExperienced.map((player, index) => {
@@ -403,6 +453,124 @@ See /help for all available commands in the game.
         await ctx.reply(`⛏<b>Richest players</b>⛏\n\n${ ratingMessageForRichest } \n\n <b>${ currentUserPlaceRichest }</b>
 \n\n\n⛏<b>Most experienced players</b>⛏\n\n${ ratingMessageForExperienced }\n\n <b>${ currentUserPlaceExperienced }</b>`,
             { parse_mode: 'HTML' } );
+
+    }
+
+
+    private handleTopSendCommand = async (ctx: CommandContext<Context>): Promise<void> => {
+        if (ctx.message === undefined) {
+            return;
+        }
+
+        const currentTime = Date.now() / 1000;
+        if (currentTime - this.lastCommandTime < 1) {
+            return;
+        }
+        this.lastCommandTime = currentTime;
+
+        await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id);
+
+        let ratingForGenerous = await this.database.findAllTheMostGenerousPlayers(ctx.message.chat.id);
+        let ratingStringsForGenerous = ratingForGenerous.map( (player, index) => {
+            let emoji = index === 0 ? '🤑' : '';
+            return `${ index + 1 }.${ emoji } ${ player.heroName }  -  <b>${ player.amountOfSentCoins }</b>💰 <b>(${ player.counterOfSentCoins })</b>`;
+        });
+
+        let ratingMessageForGenerous = ratingStringsForGenerous.length > 0 ? ratingStringsForGenerous.join("\n") : "<i>‼ No players found ‼</i>";
+
+        await ctx.reply(`⛏<b>Top senders</b>⛏\n\n${ ratingMessageForGenerous }`,{ parse_mode: 'HTML' } );
+    }
+
+
+    private handleTopReceiptCommand = async (ctx: CommandContext<Context>): Promise<void> => {
+        if (ctx.message === undefined) {
+            return;
+        }
+
+        const currentTime = Date.now() / 1000;
+        if (currentTime - this.lastCommandTime < 1) {
+            return;
+        }
+        this.lastCommandTime = currentTime;
+
+        await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id);
+
+        let ratingForHappiest = await this.database.findAllTheHappiestPlayers(ctx.message.chat.id);
+        let ratingStringsForHappiest = ratingForHappiest.map( (player, index) => {
+            let emoji = index === 0 ? '💸' : '';
+            return `${ index + 1 }.${ emoji } ${ player.heroName }  -  <b>${ player.amountOfReceivedCoins }</b>💰 <b>(${ player.counterOfReceivedCoins })</b>`;
+        } );
+
+        let ratingMessageForHappiest = ratingStringsForHappiest.length > 0 ? ratingStringsForHappiest.join("\n") : "<i>‼ No players found ‼</i>";
+
+        await ctx.reply(`⛏<b>Top recipients</b>⛏\n\n${ ratingMessageForHappiest }`,{ parse_mode: 'HTML' } );
+    }
+
+
+    private handleTopsTransferCommand = async (ctx: CommandContext<Context>): Promise<void> => {
+
+        if(ctx.message === undefined) {
+            return;
+        }
+
+        const currentTime = Date.now() / 1000;
+        if (currentTime - this.lastCommandTime < 1) {
+            return;
+        }
+        this.lastCommandTime = currentTime;
+
+        await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id);
+        const limitUsers: number = 3;
+
+        /////////////////////////////////////////////// For senders
+
+        let ratingForSenders = await this.database.findAllTheMostGenerousPlayers(ctx.message.chat.id);
+        let findCurrentUserData = ratingForSenders.find(player => player.userId === ctx.message.from.id);
+        let currentUserIndexSenders = ratingForSenders.findIndex(player => player.userId === ctx.message.from.id);
+        ratingForSenders = ratingForSenders.slice(0, limitUsers);
+        let ratingStringsForSenders = ratingForSenders.map((player, index) => {
+            let emoji = '';
+            if (index === 0) {
+                emoji = '🥇';
+            } else if (index === 1) {
+                emoji = '🥈';
+            } else if (index === 2) {
+                emoji = '🥉';
+            }
+            return `${ emoji } ${ player.heroName }  -  <b>${ player.amountOfSentCoins }</b>💰  <b>(${ player.counterOfSentCoins })</b>`;
+        });
+
+        let ratingMessageForSenders = ratingStringsForSenders.length > 0 ? ratingStringsForSenders.join("\n") : "<i>‼ No players found ‼</i>";
+        let currentUserPlaceSenders = currentUserIndexSenders !== -1 ?
+            currentUserIndexSenders + 1 + `. You  -  ${ findCurrentUserData?.amountOfSentCoins }💰  ${ findCurrentUserData?.counterOfSentCoins }`  : '👤You - Unrated ⛔';
+
+        /////////////////////////////////////////////// For receivers
+
+        let ratingForReceivers = await this.database.findAllTheHappiestPlayers(ctx.message.chat.id);
+        let currentUserIndexReceivers = ratingForReceivers.findIndex(player => player.userId === ctx.message.from.id);
+        ratingForReceivers = ratingForReceivers.slice(0, limitUsers);
+        let ratingStringsForReceivers = ratingForReceivers.map((player, index) => {
+            let emoji = '';
+            if (index === 0) {
+                emoji = '🥇';
+            } else if (index === 1) {
+                emoji = '🥈';
+            } else if (index === 2) {
+                emoji = '🥉';
+            }
+            return `${ emoji } ${ player.heroName }  -  <b>${ player.amountOfReceivedCoins }</b>💰  <b>(${ player.counterOfReceivedCoins })</b>`;
+        });
+
+        let ratingMessageForReceivers = ratingStringsForReceivers.length > 0 ? ratingStringsForReceivers.join("\n") : "<i>‼ No players found ‼</i>";
+        let currentUserPlaceReceivers = currentUserIndexReceivers !== -1 ?
+            currentUserIndexReceivers + 1 + `. You  -  ${ findCurrentUserData?.amountOfReceivedCoins }💰  ${ findCurrentUserData?.counterOfReceivedCoins }`  : '👤You - Unrated ⛔';
+
+        /////////////////////////////////////////////// Out
+
+        await ctx.reply(`⛏<b>Top senders</b>⛏\n\n${ ratingMessageForSenders } \n\n <b>${ currentUserPlaceSenders }</b>
+\n\n\n⛏<b>Top recipients</b>⛏\n\n${ ratingMessageForReceivers }\n\n <b>${ currentUserPlaceReceivers }</b>`,
+            { parse_mode: 'HTML' } );
+
     }
 
 
@@ -510,79 +678,101 @@ Use "/send <code>AMOUNT</code>" command in reply to a message to make a transfer
             let commission: number;
             /// let word = amount === 1 || amount === -1 ? 'coin' : 'coins';
 
+            let ensurePlayerExists = await this.database.ensurePlayerExists(recipient, chatId);
+
+            if (amount < 100) {
+                commission = Math.floor(1 + (amount * 2 / 100) );
+                amountWithCommission += Math.floor(1 + (amount * 2 / 100) );
+            } else if (amount >= 100 && amount < 200) {
+                commission = Math.floor(amount / 100);
+                amountWithCommission += Math.floor(amount / 100);
+            } else {
+                commission = Math.floor(amount * 0.5 / 100);
+                amountWithCommission += Math.floor(amount * 0.5 / 100);
+            }
+
             if (recipient == ctx.message.from.id) {
-                await ctx.reply(`❌Transferring itself is impossible!❌`);
+                await ctx.reply(`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
+Receiver: <b>${user.heroName}</b> 👾\nAmount: <b>${amount}💰</b>\nService fee: <b>${commission}💰</b>
+To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Transferring itself is impossible</u></b>`, {parse_mode: 'HTML'});
                 return;
             }
 
-                let ensurePlayerExists = await this.database.ensurePlayerExists(recipient, chatId);
+            if (ensurePlayerExists === null) {
 
-                if (amount < 100) {
-                    commission = Math.floor(1 + (amount * 2 / 100) );
-                    amountWithCommission += Math.floor(1 + (amount * 2 / 100) );
-                } else if (amount >= 100 && amount < 200) {
-                    commission = Math.floor(amount / 100);
-                    amountWithCommission += Math.floor(amount / 100);
-                } else {
-                    commission = Math.floor(amount * 0.5 / 100);
-                    amountWithCommission += Math.floor(amount * 0.5 / 100);
-                }
-
-                if (ensurePlayerExists === null) {
-
-                    await ctx.reply(`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${ user.heroName }</b> 👾
+                await ctx.reply(`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${ user.heroName }</b> 👾
 Receiver: <b>unknown</b>\nAmount: <b>${ amount }💰</b>\nService fee: <b>${ commission }💰</b>
 To pay: <b>${ amountWithCommission }</b>💰\n\n<b>Reason: <u>Receiver not found</u></b>`, { parse_mode: 'HTML' } );
-                    console.log(`@${ ctx.message.from.username } made a transfer of coins to a non-existent player`);
+                console.log(`@${ ctx.message.from.username } made a transfer of coins to a non-existent player`);
+                return;
+            } else {
+
+                if (amountWithCommission > user.moneyCount) {
+
+                    await ctx.reply(`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
+Receiver: <b>${ensurePlayerExists.heroName}</b> 👾\nAmount: <b>${amount}💰</b>\nService fee: <b>${commission}💰</b>
+To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Not enough money</u></b>`, {parse_mode: 'HTML'});
+                    console.log(`@${ctx.message.from.username} wanted to send more coins than he has`);
                     return;
-                } else {
-                    if(amountWithCommission > user.moneyCount) {
-                        await ctx.reply(`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${ user.heroName }</b> 👾
-Receiver: <b>${ ensurePlayerExists.heroName }</b> 👾\nAmount: <b>${ amount }💰</b>\nService fee: <b>${ commission }💰</b>
-To pay: <b>${ amountWithCommission }</b>💰\n\n<b>Reason: <u>Not enough money</u></b>`, { parse_mode: 'HTML' } );
-                        console.log(`@${ ctx.message.from.username } wanted to send more coins than he has`);
-                        return;
-                    } else if(amount > 0 && amount < 5) {
-                        await ctx.reply(`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${ user.heroName }</b> 👾
-Receiver: <b>${ ensurePlayerExists.heroName }</b> 👾\nAmount: <b>${ amount }💰</b>\nService fee: <b>${ commission }💰</b>
-To pay: <b>${ amountWithCommission }</b>💰\n\n<b>Reason: <u>Minimal transfer amount is 5💰</u></b>`, { parse_mode: 'HTML' } );
-                        return;
-                    } else if (amount <= 0 || isNaN(amount) ) {
 
-                        await ctx.reply(`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${ user.heroName }</b> 👾
-Receiver: <b>${ ensurePlayerExists.heroName }</b> 👾\nAmount: <b>${ amount }💰</b>\nService fee: <b>${ commission }💰</b>
-To pay: <b>${ amountWithCommission }</b>💰\n\n<b>Reason: <u>Invalid amount</u></b>`, { parse_mode: 'HTML' } );
-                        console.log(`@${ ctx.message.from.username } entered an invalid value for transferring coins!`);
-                        return;
-                    }
+                } else if (amount > 0 && amount < 5) {
 
-                    if (Date.now() - Number(user.lastSend) < transferTimer * 3600 * 1000) {
-                        const remainingSeconds = Math.floor(cooldownInSeconds - (Date.now() - Number(user.lastSend) ) / 1000);
+                    await ctx.reply(`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
+Receiver: <b>${ensurePlayerExists.heroName}</b> 👾\nAmount: <b>${amount}💰</b>\nService fee: <b>${commission}💰</b>
+To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Minimal transfer amount is 5💰</u></b>`, {parse_mode: 'HTML'});
+                    return;
 
-                        if (remainingSeconds > 0) {
-                            const remainingMinutes = Math.floor((remainingSeconds % 3600) / 60);
-                            const remainingSecs = remainingSeconds % 60;
+                } else if (amount <= 0 || isNaN(amount)) {
 
-                            await ctx.reply(`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${ user.heroName }</b> 👾
-Receiver: <b>${ ensurePlayerExists.heroName }</b> 👾\nAmount: <b>${ amount }💰</b>\nService fee: <b>${ commission }💰</b>
-To pay: <b>${ amountWithCommission }</b>💰\n\n<b>Reason: <u>Transfer limit exceeded</u></b>\nTry again in: <b><i>${ remainingMinutes }m ${ remainingSecs }s</i></b> ⏱`,
-                                { parse_mode: 'HTML' } );
-                        } else {
-                            await ctx.reply("⚠️ Transfer limit exceeded! ⚠️");
-                        }
-                        return;
-                    }
+                    await ctx.reply(`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
+Receiver: <b>${ensurePlayerExists.heroName}</b> 👾\nAmount: <b>${amount}💰</b>\nService fee: <b>${commission}💰</b>
+To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Invalid amount</u></b>`, {parse_mode: 'HTML'});
+                    console.log(`@${ctx.message.from.username} entered an invalid value for transferring coins!`);
+                    return;
 
-                    await this.database.updateUser(recipient, chatId, { moneyCount: ensurePlayerExists.moneyCount + amount } );
-                    await this.database.updateUser(ctx.message.from.id, chatId, { moneyCount: user.moneyCount - amountWithCommission, lastSend: new Date() } );
-
-                    await ctx.reply(`✅ SENT ✅\n--------------------\nSender: <b>${ user.heroName }</b> 👾\nReceiver: <b>${ ensurePlayerExists.heroName }</b> 👾
-Amount: <b>${ amount }💰</b>\nService fee: <b>${ commission }</b>\nTo pay: <b>${ amountWithCommission }</b>💰
-\n/profile to see balance`, { parse_mode: 'HTML' } );
-                    console.log(`@${ ctx.message.from.username } transferred ${ amount } coins to @${ ctx.message.reply_to_message?.from?.username }.`);
                 }
 
+                if (Date.now() - Number(user.lastSend) < transferTimer * 3600 * 1000) {
+                    const remainingSeconds = Math.floor(cooldownInSeconds - (Date.now() - Number(user.lastSend)) / 1000);
+
+                    if (remainingSeconds > 0) {
+                        const remainingMinutes = Math.floor((remainingSeconds % 3600) / 60);
+                        const remainingSecs = remainingSeconds % 60;
+
+                        await ctx.reply(`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
+Receiver: <b>${ensurePlayerExists.heroName}</b> 👾\nAmount: <b>${amount}💰</b>\nService fee: <b>${commission}💰</b>
+To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Transfer limit exceeded</u></b>\nTry again in: <b><i>${remainingMinutes}m ${remainingSecs}s</i></b> ⏱`,
+                            {parse_mode: 'HTML'});
+                    } else {
+                        await ctx.reply("⚠️ Transfer limit exceeded! ⚠️");
+                    }
+                    return;
+                }
+
+                const senderId = ctx.from.id;
+                const receiverId = ctx.message.reply_to_message?.from?.id;
+                const receiverUserName = ctx.message.reply_to_message?.from?.username;
+
+                await ctx.reply(`⚜ PAYMENT ⚜\n--------------------------\nSender: <b>${user.heroName}</b> 👾\nReceiver: <b>${ensurePlayerExists.heroName}</b> 👾
+Amount: <b>${amount}💰</b>\nService fee: <b>${commission}</b>💰\nTo pay: <b>${amountWithCommission}</b>💰\n\nConfirm transfer?`, {
+                    reply_markup: {
+                        inline_keyboard: [
+                            [ {
+                                text: 'YES 🟢',
+                                callback_data: `confirm~${senderId}~${receiverId}~${receiverUserName}~${chatId}~${amount}~${commission}~${amountWithCommission}`,
+                            }, {
+                                text: 'NO 🔴',
+                                callback_data: `cancel~${senderId}~${receiverId}~${receiverUserName}~${chatId}~${amount}~${commission}~${amountWithCommission}`
+                            } ]
+                        ]
+                    },
+                    parse_mode: 'HTML'
+                } );
+
+            }
+
         } else {
+
             await ctx.reply(`You can send money 💰 to other players using 🛖 <b>Dwarven Bank.</b>
 Use "/send <code>AMOUNT</code>" command in reply to a message to make a transfer.\n\n` +
                 `⚠ Service fees:\n` +
@@ -595,5 +785,74 @@ Use "/send <code>AMOUNT</code>" command in reply to a message to make a transfer
             return;
         }
     }
+
+
+    private handlePaymentConfirmClick = async (ctx: CallbackQueryContext<Context>) => {
+
+        const callbackQueryUser = ctx.callbackQuery.from.id;
+        const data = ctx.callbackQuery.data;
+
+        if (!data) {
+            return;
+        }
+
+        const [buttonId, senderId,receiverId, receiverUserName, chatId,
+            amount, commission, amountWithCommission] = data.split('~');
+
+        const user = await this.database.getOrCreateUser(callbackQueryUser, Number(chatId) );
+        const ensurePlayerExists = await this.database.ensurePlayerExists(Number(receiverId), Number(chatId) );
+
+        if (ensurePlayerExists === null) {
+            return;
+        }
+
+        if (callbackQueryUser !== Number(senderId) ) {
+            await ctx.answerCallbackQuery( {
+                text: '❌ Access denied ❌'
+            } );
+            return;
+        }
+
+        switch (buttonId) {
+
+            case 'confirm': {
+                await ctx.answerCallbackQuery( {
+                    text: `✅ SENT ✅`,
+                    show_alert: true
+                } );
+
+                await this.database.updateUser(callbackQueryUser, Number(chatId), {
+                    moneyCount: user.moneyCount - Number(amountWithCommission),
+                    lastSend: new Date(),
+                    counterOfSentCoins: user.counterOfSentCoins + 1,
+                    amountOfSentCoins: user.amountOfSentCoins + Number(amount)
+                } );
+
+                await this.database.updateUser(Number(receiverId), Number(chatId), {
+                    moneyCount: ensurePlayerExists.moneyCount + Number(amount),
+                    counterOfReceivedCoins: ensurePlayerExists.counterOfReceivedCoins + 1,
+                    amountOfReceivedCoins: ensurePlayerExists.amountOfReceivedCoins + Number(amount)
+                } );
+
+                await ctx.reply(`✅ SENT ✅\n--------------------\nSender: <b>${user.heroName}</b> 👾\nReceiver: <b>${ensurePlayerExists.heroName}</b> 👾
+Amount: <b>${amount}💰</b>\nService fee: <b>${commission}</b>💰\nTo pay: <b>${amountWithCommission}</b>💰
+\n/profile to see balance`, {parse_mode: 'HTML'} );
+                console.log(`@${ctx.callbackQuery.from.username} (${senderId}) transferred ${amount} coins to @${receiverUserName} (${receiverId})`);
+                break;
+            }
+
+            case 'cancel': {
+                await ctx.answerCallbackQuery({
+                    text: `‼ Transder cancelled ‼`,
+                    show_alert: true
+                } );
+                
+                break;
+            }
+        }
+
+        await ctx.deleteMessage();
+    }
+
 
 }

@@ -37,7 +37,8 @@ export class Database {
         if (result === null) {
             await this.players.insertOne(
                 { userId, chatId, cooldown: 24, baglimit: 10, heroName: randomName(), playerLevel: 1, expCount: 0,
-                    newExp: 20, expBarIndex: 0, gemsCount: 0, moneyCount: 0, lastMined: new Date(0), lastSend: new Date(0) } );
+                    newExp: 20, expBarIndex: 0, gemsCount: 0, moneyCount: 0, lastMined: new Date(0), lastSend: new Date(0),
+                    counterOfSentCoins: 0, amountOfSentCoins: 0, counterOfReceivedCoins: 0, amountOfReceivedCoins: 0, coinPicked: false } );
 
             return await this.getOrCreateUser(userId, chatId);
         }
@@ -59,13 +60,13 @@ export class Database {
     }
 
 
-    async findAllRichestUsers( chatId: Player['chatId'] ){
+    async findAllRichestPlayers(chatId: Player['chatId'] ){
         let result = await this.players.find({ chatId } ).toArray();
         return result.sort((a, b) => (b.gemsCount * 5 + b.moneyCount) - (a.gemsCount * 5 + a.moneyCount) );
     }
 
 
-     async findAllExperiencedUsers( chatId: Player['chatId'] ){
+     async findAllExperiencedPlayers(chatId: Player['chatId'] ){
          let result = await this.players.find({ chatId } ).toArray();
          return result.sort((a, b) => (b.playerLevel * 1000 + b.expCount) - (a.playerLevel * 1000 + a.expCount) );
      }
@@ -116,8 +117,22 @@ export class Database {
 
 
     async ensurePlayerExists(playerId: Player['userId'], chatId: Player['chatId'] ): Promise<Player | null> {
-        const result = await this.players.findOne({ userId: playerId, chatId: chatId } );
+        let result = await this.players.findOne({ userId: playerId, chatId: chatId } );
         return result;
+    }
+
+
+    async findAllTheMostGenerousPlayers( chatId: Player['chatId'] ){
+        let result = await this.players.find({ chatId } ).toArray();
+        return result.sort((a, b) =>
+            (b.counterOfSentCoins + b.amountOfSentCoins) - (a.counterOfSentCoins + a.amountOfSentCoins) );
+    }
+
+
+    async findAllTheHappiestPlayers( chatId: Player['chatId'] ){
+        let result = await this.players.find({ chatId } ).toArray();
+        return result.sort((a, b) =>
+            (b.counterOfReceivedCoins + b.amountOfReceivedCoins) - (a.counterOfReceivedCoins + a.amountOfReceivedCoins) );
     }
 
 }

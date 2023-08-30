@@ -12,6 +12,11 @@ interface Player {
     moneyCount: number
     lastMined: Date
     lastSend: Date
+    counterOfSentCoins: number
+    amountOfSentCoins: number
+    counterOfReceivedCoins: number
+    amountOfReceivedCoins: number
+    coinPicked: boolean
 }
 
 export { Player }
