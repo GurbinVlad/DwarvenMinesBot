@@ -29,6 +29,8 @@ async function migrate() {
                 amountOfSentCoins: 5 + 5 + 123 + 6 + 10,
                 counterOfReceivedCoins: 1,
                 amountOfReceivedCoins: 123,
+                counterOfDonatedCoins: 0,
+                amountOfDonatedCoins: 0,
                 coinPicked: false
             };
 
@@ -40,6 +42,8 @@ async function migrate() {
                 amountOfSentCoins: 0,
                 counterOfReceivedCoins: 1 + 1 + 1 + 1 + 1,
                 amountOfReceivedCoins: 5 + 6 + 6 + 8 + 10,
+                counterOfDonatedCoins: 0,
+                amountOfDonatedCoins: 0,
                 coinPicked: false
             };
 
@@ -51,6 +55,8 @@ async function migrate() {
                 amountOfSentCoins: 6,
                 counterOfReceivedCoins: 1 + 1,
                 amountOfReceivedCoins: 5 + 7,
+                counterOfDonatedCoins: 0,
+                amountOfDonatedCoins: 0,
                 coinPicked: false
             };
 
@@ -62,6 +68,8 @@ async function migrate() {
                 amountOfSentCoins: 123,
                 counterOfReceivedCoins: 1,
                 amountOfReceivedCoins: 123,
+                counterOfDonatedCoins: 0,
+                amountOfDonatedCoins: 0,
                 coinPicked: false
             };
 
@@ -73,6 +81,8 @@ async function migrate() {
                 amountOfSentCoins: 7 + 8,
                 counterOfReceivedCoins: 0,
                 amountOfReceivedCoins: 0,
+                counterOfDonatedCoins: 0,
+                amountOfDonatedCoins: 0,
                 coinPicked: false
             };
 
@@ -84,6 +94,8 @@ async function migrate() {
                 amountOfSentCoins: 19,
                 counterOfReceivedCoins: 0,
                 amountOfReceivedCoins: 0,
+                counterOfDonatedCoins: 0,
+                amountOfDonatedCoins: 0,
                 coinPicked: false
             };
 
@@ -95,6 +107,8 @@ async function migrate() {
                 amountOfSentCoins: 0,
                 counterOfReceivedCoins: 1,
                 amountOfReceivedCoins: 19,
+                counterOfDonatedCoins: 0,
+                amountOfDonatedCoins: 0,
                 coinPicked: false
             };
 
@@ -106,6 +120,8 @@ async function migrate() {
                 amountOfSentCoins: 0,
                 counterOfReceivedCoins: 0,
                 amountOfReceivedCoins: 0,
+                counterOfDonatedCoins: 0,
+                amountOfDonatedCoins: 0,
                 coinPicked: false
             };
 

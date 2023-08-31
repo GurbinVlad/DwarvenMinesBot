@@ -1,4 +1,4 @@
-import { Player } from './types.js';
+import { Player, Chat } from './types.js';
 import { Collection, MongoClient } from 'mongodb';
 import { randomName } from "../utilities.js";
 import { CommandContext, Context } from "grammy";
@@ -7,6 +7,7 @@ import { CommandContext, Context } from "grammy";
 export class Database {
     private client: MongoClient;
     private players: Collection<Player>;
+    private chats: Collection<Chat>;
 
 
     constructor() {
@@ -18,6 +19,7 @@ export class Database {
         this.client = new MongoClient(process.env.URL);
         const mongoDb = this.client.db(process.env.dbName);
         this.players = mongoDb.collection('Players');
+        this.chats = mongoDb.collection('Chats');
     }
 
 
@@ -38,9 +40,23 @@ export class Database {
             await this.players.insertOne(
                 { userId, chatId, cooldown: 24, baglimit: 10, heroName: randomName(), playerLevel: 1, expCount: 0,
                     newExp: 20, expBarIndex: 0, gemsCount: 0, moneyCount: 0, lastMined: new Date(0), lastSend: new Date(0),
-                    counterOfSentCoins: 0, amountOfSentCoins: 0, counterOfReceivedCoins: 0, amountOfReceivedCoins: 0, coinPicked: false } );
+                    counterOfSentCoins: 0, amountOfSentCoins: 0, counterOfReceivedCoins: 0, amountOfReceivedCoins: 0, counterOfDonatedCoins: 0,
+                    amountOfDonatedCoins: 0, coinPicked: false } );
 
             return await this.getOrCreateUser(userId, chatId);
+        }
+
+        return result;
+    }
+
+
+    async getOrCreateChat(chatId: Chat['chatId'] ): Promise<Chat> {
+        let result = await this.chats.findOne({ chatId } );
+        if (result === null) {
+            await this.chats.insertOne(
+                { chatId, bankBalance: 0, fundBalance: 0, fundCapacity: 60 } );
+
+            return await this.getOrCreateChat(chatId);
         }
 
         return result;
@@ -50,6 +66,13 @@ export class Database {
     async updateUser(userId: Player['userId'], chatId: Player['chatId'], allFields: Partial<Player>): Promise<void> {
         await this.players.updateOne(
               { userId, chatId },
+            { $set: allFields } );
+    }
+
+
+    async updateChat(chatId: Chat['chatId'], allFields: Partial<Chat>): Promise<void> {
+        await this.chats.updateOne(
+            { chatId },
             { $set: allFields } );
     }
 
@@ -117,8 +140,7 @@ export class Database {
 
 
     async ensurePlayerExists(playerId: Player['userId'], chatId: Player['chatId'] ): Promise<Player | null> {
-        let result = await this.players.findOne({ userId: playerId, chatId: chatId } );
-        return result;
+         return this.players.findOne({ userId: playerId, chatId: chatId } );
     }
 
 
@@ -133,6 +155,13 @@ export class Database {
         let result = await this.players.find({ chatId } ).toArray();
         return result.sort((a, b) =>
             (b.counterOfReceivedCoins + b.amountOfReceivedCoins) - (a.counterOfReceivedCoins + a.amountOfReceivedCoins) );
+    }
+
+
+    async findAllTheDonatedPlayers( chatId: Player['chatId'] ){
+        let result = await this.players.find({ chatId } ).toArray();
+        return result.sort((a, b) =>
+            (b.counterOfDonatedCoins + b.amountOfDonatedCoins) - (a.counterOfDonatedCoins + a.amountOfDonatedCoins) );
     }
 
 }

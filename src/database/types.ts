@@ -1,8 +1,8 @@
 interface Player {
     userId: number
     chatId: number
-      cooldown: number
-      baglimit: number
+    cooldown: number
+    baglimit: number
     heroName : string
       playerLevel: number
       expCount: number
@@ -12,11 +12,20 @@ interface Player {
     moneyCount: number
     lastMined: Date
     lastSend: Date
-    counterOfSentCoins: number
-    amountOfSentCoins: number
-    counterOfReceivedCoins: number
-    amountOfReceivedCoins: number
+      counterOfSentCoins: number
+      amountOfSentCoins: number
+      counterOfReceivedCoins: number
+      amountOfReceivedCoins: number
+      counterOfDonatedCoins: number
+      amountOfDonatedCoins: number
     coinPicked: boolean
 }
 
-export { Player }
+interface Chat {
+    chatId: number
+      bankBalance: number
+      fundBalance: number
+      fundCapacity: number
+}
+
+export { Player, Chat }
