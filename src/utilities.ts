@@ -8,6 +8,9 @@ import {
 	neutralSituations
 } from './templates.js'
 
+export const MINUTE = 60 * 1000
+export const HOUR = 1 * 60 * MINUTE
+
 export function randomInteger(min: number, max: number) {
 	min = Math.ceil(min)
 	max = Math.floor(max)

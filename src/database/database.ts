@@ -77,11 +77,22 @@ export class Database {
 				coinScheduledAt: new Date(2004)
 			})
 
-			// TODO: schedule coin drop
-			return await this.getOrCreateChat(chatId)
+			const chat = await this.getOrCreateChat(chatId)
+			// TODO: Uncomment
+			// await Tasks.scheduleCoinDropForChat(chatId)
+			return chat
 		}
 
 		return result
+	}
+
+	async getChats(): Promise<Chat[]> {
+		return this.chats.find().toArray()
+	}
+
+	async checkCoinPicked(chatId: Chat['chatId']): Promise<boolean> {
+		const chat = await this.getOrCreateChat(chatId)
+		return chat.coinPicked
 	}
 
 	async updateUser(
@@ -108,9 +119,7 @@ export class Database {
 		const result = await this.players.find({ chatId }).toArray()
 		return result.sort(
 			(a, b) =>
-				b.gemsCount * 5 +
-				b.moneyCount -
-				(a.gemsCount * 5 + a.moneyCount)
+				b.gemsCount * 5 + b.moneyCount - (a.gemsCount * 5 + a.moneyCount)
 		)
 	}
 
@@ -118,9 +127,7 @@ export class Database {
 		const result = await this.players.find({ chatId }).toArray()
 		return result.sort(
 			(a, b) =>
-				b.playerLevel * 1000 +
-				b.expCount -
-				(a.playerLevel * 1000 + a.expCount)
+				b.playerLevel * 1000 + b.expCount - (a.playerLevel * 1000 + a.expCount)
 		)
 	}
 
@@ -130,10 +137,7 @@ export class Database {
 		messageFromChatId: number,
 		lvlArr: number[]
 	): Promise<void> {
-		const user = await this.getOrCreateUser(
-			messageFromId,
-			messageFromChatId
-		)
+		const user = await this.getOrCreateUser(messageFromId, messageFromChatId)
 
 		if (user) {
 			if (user.playerLevel + 1 > 10 && user.expCount >= user.newExp) {
@@ -183,10 +187,7 @@ export class Database {
 							user.playerLevel + 1
 						} \n\n📍Your bag capacity has been increased \n📍More trips to the mines are available to you`
 					)
-				} else if (
-					user.playerLevel + 1 === 5 ||
-					user.playerLevel + 1 === 10
-				) {
+				} else if (user.playerLevel + 1 === 5 || user.playerLevel + 1 === 10) {
 					await this.updateUser(messageFromId, messageFromChatId, {
 						cooldown: user.cooldown - 3
 					})
