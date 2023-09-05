@@ -15,16 +15,13 @@ const players: Collection<Player> = client.db(process.env.dbName).collection('Pl
 const chats: Collection<Player> = client.db(process.env.dbName).collection('Chats')
 
 async function migrate() {
-
 	const dataPlayers = await players.find().toArray()
 	let updateData
 
 	for (const user of dataPlayers) {
-
 		////////////////// Add new fields or set new values for them //////////////////
 
 		if (user.heroName == 'It was terrible when I') {
-
 			updateData = {
 				lastSend: new Date(0),
 				counterOfSentCoins: 1 + 1 + 1 + 1 + 1,
@@ -34,9 +31,7 @@ async function migrate() {
 				counterOfDonatedCoins: 0,
 				amountOfDonatedCoins: 0
 			}
-
 		} else if (user.heroName == '👑 Monke') {
-
 			updateData = {
 				lastSend: new Date(0),
 				counterOfSentCoins: 0,
@@ -46,9 +41,7 @@ async function migrate() {
 				counterOfDonatedCoins: 0,
 				amountOfDonatedCoins: 0
 			}
-
 		} else if (user.heroName == 'Sid') {
-
 			updateData = {
 				lastSend: new Date(0),
 				counterOfSentCoins: 1,
@@ -58,9 +51,7 @@ async function migrate() {
 				counterOfDonatedCoins: 0,
 				amountOfDonatedCoins: 0
 			}
-
 		} else if (user.heroName == 'Gangster') {
-
 			updateData = {
 				lastSend: new Date(0),
 				counterOfSentCoins: 1,
@@ -70,9 +61,7 @@ async function migrate() {
 				counterOfDonatedCoins: 0,
 				amountOfDonatedCoins: 0
 			}
-
 		} else if (user.heroName == 'Minecraft') {
-
 			updateData = {
 				lastSend: new Date(0),
 				counterOfSentCoins: 1 + 1,
@@ -82,9 +71,7 @@ async function migrate() {
 				counterOfDonatedCoins: 0,
 				amountOfDonatedCoins: 0
 			}
-
 		} else if (user.heroName == 'Slavutich') {
-
 			updateData = {
 				lastSend: new Date(0),
 				counterOfSentCoins: 1,
@@ -94,9 +81,7 @@ async function migrate() {
 				counterOfDonatedCoins: 0,
 				amountOfDonatedCoins: 0
 			}
-
 		} else if (user.heroName == 'Miner2000') {
-
 			updateData = {
 				lastSend: new Date(0),
 				counterOfSentCoins: 0,
@@ -106,9 +91,7 @@ async function migrate() {
 				counterOfDonatedCoins: 0,
 				amountOfDonatedCoins: 0
 			}
-
 		} else {
-
 			updateData = {
 				lastSend: new Date(0),
 				counterOfSentCoins: 0,
@@ -120,18 +103,9 @@ async function migrate() {
 			}
 		}
 
-		await players.updateOne(
-			{ _id: user._id },
-			{ $set: updateData }
-		)
+		await players.updateOne({ _id: user._id }, { $set: updateData })
 
-		await chats.updateMany(
-			{},
-			{
-				coinPicked: true,
-				coinScheduledAt: new Date(2004)
-			}
-		)
+		await chats.updateMany({}, { coinScheduledAt: new Date(2004) })
 
 		///////////////////////////////////////////////////////////////////////////////
 
@@ -211,40 +185,28 @@ async function migrate() {
 }
 
 try {
-
 	console.info(
-		'\n\n-------------------------------------\n' +
-			'Database connection for migration...' )
+		'\n\n-------------------------------------\n' + 'Database connection for migration...'
+	)
 	await client.connect()
-
 } catch (error) {
-
 	console.info('Database connection for migration failed! :', error)
 	process.exit(1)
-
 }
 
 try {
-
 	console.info('Running migration...')
 	await migrate()
-
 } catch (error) {
-
 	console.info('Migration failed! :', error)
 	process.exit(1)
-
 }
 
 try {
-
 	console.info('Disconnecting...')
 	await client.close()
 	console.info('Done!' + '\n-------------------------------------\n')
-
 } catch (error) {
-
 	console.error('Disconnection failed!: ', error)
 	process.exit(1)
-
 }

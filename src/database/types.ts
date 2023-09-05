@@ -26,7 +26,6 @@ interface Chat {
 	fundBalance: number
 	fundGoal: number
 	coinScheduledAt: Date
-	coinPicked: boolean
 }
 
 export { Player, Chat }
