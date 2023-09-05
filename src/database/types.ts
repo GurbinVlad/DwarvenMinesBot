@@ -24,7 +24,7 @@ interface Chat {
 	chatId: number
 	bankBalance: number
 	fundBalance: number
-	fundCapacity: number
+	fundGoal: number
 	coinScheduledAt: Date
 	coinPicked: boolean
 }
