@@ -26,6 +26,9 @@ export class Tasks {
 		})
 
 		time.scheduleJob(coinDropDate, () => dropCoinFunc(chatId))
+		console.info(
+			`Scheduled coin drop for chat ${chatId} at ${coinDropDate.toLocaleString()}`
+		)
 	}
 
 	static async scheduleCoinDropForAllChats(
@@ -35,18 +38,24 @@ export class Tasks {
 		const chats = await database.getChats()
 
 		for (const chat of chats) {
-			if (
-				this.roundDateNumber(chat.coinScheduledAt) === this.roundDateNumber(new Date())
-			) {
-				time.scheduleJob(chat.coinScheduledAt, () => dropCoinFunc(chat.chatId))
-			} else {
-				await this.scheduleCoinDropForChat(
-					database,
-					dropCoinFunc,
-					new Date(),
+			// TODO: Schedule if missed
+			// if (
+			// 	this.roundDateNumber(chat.coinScheduledAt) === this.roundDateNumber(new Date())
+			// ) {
+			time.scheduleJob(chat.coinScheduledAt, () => dropCoinFunc(chat.chatId))
+			console.info(
+				`[STARTUP] Scheduled coin drop for chat ${
 					chat.chatId
-				)
-			}
+				} at ${chat.coinScheduledAt.toLocaleString()}`
+			)
+			// } else {
+			// 	await this.scheduleCoinDropForChat(
+			// 		database,
+			// 		dropCoinFunc,
+			// 		new Date(),
+			// 		chat.chatId
+			// 	)
+			// }
 		}
 	}
 }
