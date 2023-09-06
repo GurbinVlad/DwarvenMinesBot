@@ -1292,16 +1292,15 @@ Donate: <b>${amount}</b>💰\n\n/profile to see balance`,
 		const chat = await this.database.getOrCreateChat(chatId, this.dropCoinFunc.bind(this))
 		const findAllUsers = await this.database.findAllPlayers(chatId)
 		const amountHappiestPlayers: number = 3
-		/// const fromBank = Math.floor((80 * chat.bankBalance) / 100);
-		const totalFund = Math.floor(chat.fundBalance / amountHappiestPlayers)
 
-		if (chat.fundBalance < chat.fundGoal) {
+		const fromBank = Math.floor((80 * chat.bankBalance) / 100)
+		const totalFund = chat.fundBalance + fromBank
+
+		if (totalFund < chat.fundGoal || findAllUsers.length < amountHappiestPlayers) {
 			return
 		}
 
-		/*if (findAllUsers.length < amountHappiestPlayers) {  /// ignore
-			return;
-		}*/
+		const perUser = Math.ceil(totalFund / 3)
 
 		const strPlayer = []
 		let checkFirstIndex = -1
@@ -1317,7 +1316,7 @@ Donate: <b>${amount}</b>💰\n\n/profile to see balance`,
 			selectedPlayer = findAllUsers[randomIndex]
 
 			await this.database.updateUser(selectedPlayer.userId, chatId, {
-				moneyCount: selectedPlayer.moneyCount + totalFund
+				moneyCount: selectedPlayer.moneyCount + perUser
 			})
 			await this.database.updateChat(chatId, {
 				fundBalance: 0
@@ -1329,9 +1328,7 @@ Donate: <b>${amount}</b>💰\n\n/profile to see balance`,
 
 		await ctx.reply(
 			`🛖 Foundation of the <b>Dwarven Bank</b> has been withdrawn!\n
-Dwarfs got <b>${totalFund}💰</b> each, for a total withdrawal of <b>${
-				totalFund * 3
-			}💰</b>:
+Dwarfs got <b>${perUser}💰</b> each, for a total withdrawal of <b>${perUser * 3}💰</b>:
 1. ${strPlayer[0]} 👾
 2. ${strPlayer[1]} 👾
 3. ${strPlayer[2]} 👾`,
