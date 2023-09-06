@@ -15,6 +15,13 @@ export class GemMinerBot {
 	) {
 		this.bot = new Bot(token)
 		this.bot.catch(console.error)
+		this.bot.use(async (ctx, next) => {
+			if (!ctx.chat) {
+				return
+			}
+			await this.database.getOrCreateChat(ctx.chat.id, this.dropCoinFunc.bind(this))
+			return await next()
+		})
 		this.bot.command('start', this.handleStartCommand.bind(this))
 		this.bot.command('help', this.handleHelpCommand.bind(this))
 		this.bot.command('rules', this.handleRulesCommand.bind(this))
