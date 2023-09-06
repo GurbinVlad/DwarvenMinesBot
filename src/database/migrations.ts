@@ -15,173 +15,77 @@ const players: Collection<Player> = client.db(process.env.dbName).collection('Pl
 const chats: Collection<Player> = client.db(process.env.dbName).collection('Chats')
 
 async function migrate() {
-	const dataPlayers = await players.find().toArray()
-	let updateData
-
-	for (const user of dataPlayers) {
-		////////////////// Add new fields or set new values for them //////////////////
-
-		if (user.heroName == 'It was terrible when I') {
-			updateData = {
-				lastSend: new Date(0),
-				counterOfSentCoins: 1 + 1 + 1 + 1 + 1,
-				amountOfSentCoins: 5 + 5 + 123 + 6 + 10,
-				counterOfReceivedCoins: 1,
-				amountOfReceivedCoins: 123,
-				counterOfDonatedCoins: 0,
-				amountOfDonatedCoins: 0
-			}
-		} else if (user.heroName == '👑 Monke') {
-			updateData = {
-				lastSend: new Date(0),
+	await players.updateMany(
+		{},
+		{
+			$set: {
 				counterOfSentCoins: 0,
 				amountOfSentCoins: 0,
-				counterOfReceivedCoins: 1 + 1 + 1 + 1 + 1,
-				amountOfReceivedCoins: 5 + 6 + 6 + 8 + 10,
 				counterOfDonatedCoins: 0,
-				amountOfDonatedCoins: 0
-			}
-		} else if (user.heroName == 'Sid') {
-			updateData = {
-				lastSend: new Date(0),
-				counterOfSentCoins: 1,
-				amountOfSentCoins: 6,
-				counterOfReceivedCoins: 1 + 1,
-				amountOfReceivedCoins: 5 + 7,
-				counterOfDonatedCoins: 0,
-				amountOfDonatedCoins: 0
-			}
-		} else if (user.heroName == 'Gangster') {
-			updateData = {
-				lastSend: new Date(0),
-				counterOfSentCoins: 1,
-				amountOfSentCoins: 123,
-				counterOfReceivedCoins: 1,
-				amountOfReceivedCoins: 123,
-				counterOfDonatedCoins: 0,
-				amountOfDonatedCoins: 0
-			}
-		} else if (user.heroName == 'Minecraft') {
-			updateData = {
-				lastSend: new Date(0),
-				counterOfSentCoins: 1 + 1,
-				amountOfSentCoins: 7 + 8,
+				amountOfDonatedCoins: 0,
 				counterOfReceivedCoins: 0,
-				amountOfReceivedCoins: 0,
-				counterOfDonatedCoins: 0,
-				amountOfDonatedCoins: 0
-			}
-		} else if (user.heroName == 'Slavutich') {
-			updateData = {
-				lastSend: new Date(0),
-				counterOfSentCoins: 1,
-				amountOfSentCoins: 19,
-				counterOfReceivedCoins: 0,
-				amountOfReceivedCoins: 0,
-				counterOfDonatedCoins: 0,
-				amountOfDonatedCoins: 0
-			}
-		} else if (user.heroName == 'Miner2000') {
-			updateData = {
-				lastSend: new Date(0),
-				counterOfSentCoins: 0,
-				amountOfSentCoins: 0,
-				counterOfReceivedCoins: 1,
-				amountOfReceivedCoins: 19,
-				counterOfDonatedCoins: 0,
-				amountOfDonatedCoins: 0
-			}
-		} else {
-			updateData = {
-				lastSend: new Date(0),
-				counterOfSentCoins: 0,
-				amountOfSentCoins: 0,
-				counterOfReceivedCoins: 0,
-				amountOfReceivedCoins: 0,
-				counterOfDonatedCoins: 0,
-				amountOfDonatedCoins: 0
+				amountOfReceivedCoins: 0
 			}
 		}
+	)
 
-		await players.updateOne({ _id: user._id }, { $set: updateData })
-
-		await chats.updateMany({}, { coinScheduledAt: new Date(2004) })
-
-		///////////////////////////////////////////////////////////////////////////////
-
-		/////////////////////////Changing experience data//////////////////////////////
-
-		/*if (user.expCount >= 20) {
-
-            if (user.expCount >= 90 && user.expCount < 150) {
-                updateData = {
-                    cooldown: 19,
-                    playerLevel: 4,
-                    baglimit: 25,
-                    newExp: 150,
-                    expBarIndex: 3,
-                    lastMined: new Date(0)
-                };
-
-            } else if (user.expCount >= 50 && user.expCount < 90) {
-                updateData = {
-                    cooldown: 21,
-                    playerLevel: 3,
-                    baglimit: 20,
-                    newExp: 90,
-                    expBarIndex: 2,
-                    lastMined: new Date(0)
-                };
-
-            } else updateData = {
-                cooldown: 22,
-                playerLevel: 2,
-                baglimit: 15,
-                newExp: 50,
-                expBarIndex: 1,
-                lastMined: new Date(0)
-            };
-
-            await players.updateOne(
-                { _id: user._id },
-                { $set: updateData }
-            );
-
-        } else {
-            updateData = {
-                cooldown: 24,
-                playerLevel: 1,
-                baglimit: 10,
-                newExp: 20,
-                expBarIndex: 0,
-                lastMined: new Date(0)
-            };
-
-            await players.updateOne(
-                { _id: user._id },
-                { $set: updateData }
-            );
-        }*/
-
-		///////////////////////////////////////////////////////////////////////////////////
-
-		////////////////// To add a new field //////////////////
-
-		/*updateData = {
-            lastSend: new Date(0),
-            counterOfSentCoins: 0,
-            amountOfSentCoins: 0,
-            counterOfReceivedCoins: 0,
-            amountOfReceivedCoins: 0
-        };
-
-        await players.updateOne(
-            { _id: user._id },
-            { $set: updateData }
-        );*/
-
-		////////////////////////////////////////////////////////
+	for (const data of [
+		{ sender: 625056129, receiver: 849670500, amount: 5 },
+		{ sender: 625056129, receiver: 1962463011, amount: 5 },
+		{ sender: 426043802, receiver: 625056129, amount: 123 },
+		{ sender: 625056129, receiver: 426043802, amount: 123 },
+		{ sender: 625056129, receiver: 849670500, amount: 6 },
+		{ sender: 1962463011, receiver: 849670500, amount: 6 },
+		{ sender: 538001026, receiver: 1962463011, amount: 7 },
+		{ sender: 538001026, receiver: 849670500, amount: 8 },
+		{ sender: 290978290, receiver: 660830829, amount: 19 },
+		{ sender: 625056129, receiver: 849670500, amount: 10 },
+		{ sender: 625056129, receiver: 849670500, amount: 5 },
+		{ sender: 625056129, receiver: 849670500, amount: 10 },
+		{ sender: 625056129, receiver: 596572471, amount: 9 },
+		{ sender: 290978290, receiver: 596572471, amount: 9 },
+		{ sender: 625056129, receiver: 849670500, amount: 50 },
+		{ sender: 664671499, receiver: 849670500, amount: 5 },
+		{ sender: 1962463011, receiver: 849670500, amount: 10 },
+		{ sender: 486895418, receiver: 849670500, amount: 10 },
+		{ sender: 538001026, receiver: 849670500, amount: 16 },
+		{ sender: 426043802, receiver: 849670500, amount: 9 },
+		{ sender: 538001026, receiver: 1962463011, amount: 20 },
+		{ sender: 290978290, receiver: 1962463011, amount: 10 },
+		{ sender: 596572471, receiver: 849670500, amount: 10 },
+		{ sender: 625056129, receiver: 426043802, amount: 25 },
+		{ sender: 290978290, receiver: 849670500, amount: 1650 },
+		{ sender: 849670500, receiver: 538001026, amount: 20 },
+		{ sender: 290978290, receiver: 664671499, amount: 5 }
+	]) {
+		await players.updateOne(
+			{ userId: data.sender, chatId: -1001459050125 },
+			{
+				$inc: {
+					counterOfSentCoins: 1,
+					amountOfSentCoins: data.amount
+				}
+			}
+		)
+		await players.updateOne(
+			{ userId: data.receiver, chatId: -1001459050125 },
+			{
+				$inc: {
+					counterOfReceivedCoins: 1,
+					amountOfReceivedCoins: data.amount
+				}
+			}
+		)
 	}
+
+	await chats.updateMany(
+		{},
+		{
+			$set: {
+				coinScheduledAt: new Date(2004)
+			}
+		}
+	)
 }
 
 try {
