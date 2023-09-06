@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Collection } from 'mongodb'
 import { MongoClient } from 'mongodb'
 import type { Player } from './types.js'
@@ -14,7 +15,7 @@ const client = new MongoClient(process.env.URL)
 const players: Collection<Player> = client.db(process.env.dbName).collection('Players')
 const chats: Collection<Player> = client.db(process.env.dbName).collection('Chats')
 
-async function migrate() {
+async function addTransferData() {
 	await players.updateMany(
 		{},
 		{
@@ -77,7 +78,9 @@ async function migrate() {
 			}
 		)
 	}
+}
 
+async function addCoinScheduleTime() {
 	await chats.updateMany(
 		{},
 		{
@@ -86,6 +89,33 @@ async function migrate() {
 			}
 		}
 	)
+}
+
+async function setBankAndFundBalances() {
+	const toBankAmount = (amount: number) => {
+		if (amount < 100) {
+			return Math.floor(1 + (amount * 2) / 100)
+		} else if (amount >= 100 && amount < 200) {
+			return Math.floor(amount / 100)
+		} else {
+			return Math.floor((amount * 0.5) / 100)
+		}
+	}
+	const groups = await chats.find().toArray()
+	for (const group of groups) {
+		const userList = await players.find({ chatId: group?.chatId }).toArray()
+		const totalSent = userList.reduce(
+			(balance, user) => balance + toBankAmount(user.amountOfSentCoins),
+			0
+		)
+		await chats.updateOne({ chatId: group.chatId }, { $inc: { bankBalance: totalSent } })
+	}
+}
+
+const migrate = async () => {
+	// await addTransferData()
+	// await addCoinScheduleTime()
+	await setBankAndFundBalances()
 }
 
 try {
