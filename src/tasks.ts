@@ -26,9 +26,7 @@ export class Tasks {
 		})
 
 		time.scheduleJob(coinDropDate, () => dropCoinFunc(chatId))
-		console.info(
-			`Scheduled coin drop for chat ${chatId} at ${coinDropDate.toLocaleString()}`
-		)
+		console.info(`Scheduled coin drop for chat ${chatId} at ${coinDropDate.toLocaleString()}`)
 	}
 
 	static async scheduleCoinDropForAllChats(

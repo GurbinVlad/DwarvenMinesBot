@@ -18,10 +18,7 @@ export class GemMinerBot {
 			if (!ctx.chat) {
 				return
 			}
-			await this.database.getOrCreateChat(
-				ctx.chat.id,
-				this.dropCoinFunc.bind(this)
-			)
+			await this.database.getOrCreateChat(ctx.chat.id, this.dropCoinFunc.bind(this))
 			return await next()
 		})
 		this.bot.command('start', this.handleStartCommand.bind(this))
@@ -37,10 +34,7 @@ export class GemMinerBot {
 		this.bot.command('top_receivers', this.handleTopReceiptCommand.bind(this))
 		this.bot.command('tops', this.handleTopsCommand.bind(this))
 		this.bot.command('tops_transfer', this.handleTopsTransferCommand.bind(this))
-		this.bot.command(
-			'tops_donations',
-			this.handleTopDonateFundCommand.bind(this)
-		)
+		this.bot.command('tops_donations', this.handleTopDonateFundCommand.bind(this))
 		this.bot.command('sell', this.handleSellCommand.bind(this))
 		this.bot.command('send', this.handleSendCommand.bind(this))
 		this.bot.command('donate', this.handleDonateFundCommand.bind(this))
@@ -66,10 +60,7 @@ export class GemMinerBot {
 		const date: Date = new Date()
 		console.log(`Bot started [ ${date} ]`)
 		this.bot.start()
-		Tasks.scheduleCoinDropForAllChats(
-			this.database,
-			this.dropCoinFunc.bind(this)
-		)
+		Tasks.scheduleCoinDropForAllChats(this.database, this.dropCoinFunc.bind(this))
 	}
 
 	private async dropCoinFunc(chatId: number) {
@@ -102,9 +93,7 @@ export class GemMinerBot {
 		return message
 	}
 
-	private handleGrowCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleGrowCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -134,9 +123,7 @@ export class GemMinerBot {
 		return
 	}
 
-	private handleStartCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleStartCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -147,10 +134,7 @@ export class GemMinerBot {
 		}
 		this.lastCommandTime = currentTime
 
-		await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
 		const username = `@${ctx.message.from.username}`
 		const message = `@${ctx.message.from.username}, welcome to Dwarven Mines!
@@ -165,9 +149,7 @@ See /help for all available commands in the game.
 		console.log(`${username} joined the game.`)
 	}
 
-	private handleMineCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleMineCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -178,10 +160,7 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		const user = await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		const user = await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
 		const username = `@${ctx.message.from.username}`
 		const cooldownInSeconds = user.cooldown * 3600
@@ -198,7 +177,9 @@ See /help for all available commands in the game.
 
 				await ctx.reply(
 					`You can't mine now. Go take a rest for: <b><i>${remainingHours}h ${remainingMinutes}m ${remainingSecs}s</i></b> ⏱`,
-					{ parse_mode: 'HTML' }
+					{
+						parse_mode: 'HTML'
+					}
 				)
 			} else {
 				await ctx.reply("You can't mine now. Try again later.")
@@ -241,16 +222,12 @@ See /help for all available commands in the game.
 				lastMined: new Date()
 			})
 
-			messageOfMines = randomSituationInMines(
-				user.heroName,
-				-user.gemsCount,
-				exp
-			)
+			messageOfMines = randomSituationInMines(user.heroName, -user.gemsCount, exp)
 
-			console.log(
-				`${username}: ${-user.gemsCount} ${word}, and received +${exp} XP.`
-			)
-			await ctx.reply(`${messageOfMines}`, { parse_mode: 'HTML' })
+			console.log(`${username}: ${-user.gemsCount} ${word}, and received +${exp} XP.`)
+			await ctx.reply(`${messageOfMines}`, {
+				parse_mode: 'HTML'
+			})
 		} else if (user.gemsCount + gems > user.baglimit) {
 			await this.database.updateUser(ctx.message.from.id, ctx.message.chat.id, {
 				gemsCount: user.baglimit,
@@ -264,7 +241,9 @@ See /help for all available commands in the game.
 				exp
 			)
 			console.log(`${username}: ${gems} ${word}, and received +${exp} XP.`)
-			await ctx.reply(`${messageOfMines}`, { parse_mode: 'HTML' })
+			await ctx.reply(`${messageOfMines}`, {
+				parse_mode: 'HTML'
+			})
 		} else {
 			await this.database.updateUser(ctx.message.from.id, ctx.message.chat.id, {
 				gemsCount: user.gemsCount + gems,
@@ -274,7 +253,9 @@ See /help for all available commands in the game.
 
 			messageOfMines = randomSituationInMines(user.heroName, gems, exp)
 			console.log(`${username}: ${gems} ${word}, and received +${exp} XP.`)
-			await ctx.reply(`${messageOfMines}`, { parse_mode: 'HTML' })
+			await ctx.reply(`${messageOfMines}`, {
+				parse_mode: 'HTML'
+			})
 		}
 
 		await this.database.ifUpdateLevel(
@@ -285,9 +266,7 @@ See /help for all available commands in the game.
 		)
 	}
 
-	private handleProfileCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleProfileCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -298,30 +277,29 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		const user = await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		const user = await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
 		if (user.gemsCount === user.baglimit) {
 			await ctx.reply(
 				`<b>${user.heroName}</b> 👾\n
 🏅 Level: ${user.playerLevel}     ⭐️ ${user.expCount} / ${user.newExp} \n\n💎 ${user.gemsCount} / ${user.baglimit}   💰 ${user.moneyCount}\n
 ‼ Your bag is full. Sell gems ‼`,
-				{ parse_mode: 'HTML' }
+				{
+					parse_mode: 'HTML'
+				}
 			)
 		} else {
 			await ctx.reply(
 				`<b>${user.heroName}</b> 👾\n
 🏅Level: ${user.playerLevel}    ⭐️ ${user.expCount} / ${user.newExp} \n\n💎 ${user.gemsCount} / ${user.baglimit}   💰 ${user.moneyCount}`,
-				{ parse_mode: 'HTML' }
+				{
+					parse_mode: 'HTML'
+				}
 			)
 		}
 	}
 
-	private handleSetNameCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleSetNameCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -332,10 +310,7 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
 		const username = `@${ctx.message.from.username}`
 		const setNameRegex = /^\/name(@DwarvenMinesBot)?\s+(.+)$/
@@ -346,15 +321,14 @@ See /help for all available commands in the game.
 			name = name.slice(0, 30)
 			const setName = name.replaceAll('<', '&lt;').replaceAll('>', '&gt;')
 
-			const existingUser = await this.database.checkUniqueName(
-				ctx.message.chat.id,
-				setName
-			)
+			const existingUser = await this.database.checkUniqueName(ctx.message.chat.id, setName)
 
 			if (existingUser) {
 				await ctx.reply(
 					`💢 Sorry, the name '${setName}' is already taken. Think of something else!`,
-					{ parse_mode: 'HTML' }
+					{
+						parse_mode: 'HTML'
+					}
 				)
 
 				console.log(
@@ -373,20 +347,15 @@ See /help for all available commands in the game.
 
 			console.log(`${username} named his dwarven --> ${setName}`)
 		} else {
-			await ctx.reply(
-				'💢 Name is not specified!\n\nFormat: /name <code>NAME</code>',
-				{
-					parse_mode: 'HTML'
-				}
-			)
+			await ctx.reply('💢 Name is not specified!\n\nFormat: /name <code>NAME</code>', {
+				parse_mode: 'HTML'
+			})
 
 			console.log(`${username} failed to change the name of his dwarven!`)
 		}
 	}
 
-	private handleHelpCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleHelpCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		/*if(ctx.message === undefined || ctx.message.date < (Date.now() / 1000) - 5) {
             return;
         }*/
@@ -401,10 +370,7 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
 		await ctx.reply(
 			'📜 Commands list 📜\n' +
@@ -417,13 +383,13 @@ See /help for all available commands in the game.
 				'\n▫/send <code>AMOUNT</code> — Transfer 💰 to other players (/send for info)' +
 				'\n▫/donate <code>AMOUNT</code> — Donate 💰 to a charitable foundation for dwarves in need 🛖 (/donate for info)' +
 				'\n▫/fund — Charitable foundation for dwarves in need',
-			{ parse_mode: 'HTML' }
+			{
+				parse_mode: 'HTML'
+			}
 		)
 	}
 
-	private handleTopHelpCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleTopHelpCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -434,10 +400,7 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
 		await ctx.reply(
 			'📜 List commands for rating 📜\n' +
@@ -451,9 +414,7 @@ See /help for all available commands in the game.
 		)
 	}
 
-	private handleRulesCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleRulesCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -464,10 +425,7 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
 		await ctx.reply(
 			'<b><i>Rules for game</i></b> \n' +
@@ -481,13 +439,13 @@ See /help for all available commands in the game.
 				'4️⃣ Mines are very tiring, i know. At first, you will mine only once a day, but who knows, how enduring will you be?🤔 \n' +
 				'\n' +
 				'I think there are the most important things you should know. Good luck! Oh, one request: please, try not to die... 🙂',
-			{ parse_mode: 'HTML' }
+			{
+				parse_mode: 'HTML'
+			}
 		)
 	}
 
-	private handleRichestCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleRichestCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -498,14 +456,9 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
-		const ratingForRichest = await this.database.findAllRichestPlayers(
-			ctx.message.chat.id
-		)
+		const ratingForRichest = await this.database.findAllRichestPlayers(ctx.message.chat.id)
 
 		const ratingStringsForRichest = ratingForRichest.map((player, index) => {
 			const emoji = index === 0 ? '👑' : ''
@@ -519,17 +472,12 @@ See /help for all available commands in the game.
 				? ratingStringsForRichest.join('\n')
 				: '<i>‼ No players found ‼</i>'
 
-		await ctx.reply(
-			`⛏<b>Richest players</b>⛏\n\n${ratingMessageForRichest}`,
-			{
-				parse_mode: 'HTML'
-			}
-		)
+		await ctx.reply(`⛏<b>Richest players</b>⛏\n\n${ratingMessageForRichest}`, {
+			parse_mode: 'HTML'
+		})
 	}
 
-	private handleExperiencedCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleExperiencedCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -540,38 +488,30 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
 		const ratingForExperienced = await this.database.findAllExperiencedPlayers(
 			ctx.message.chat.id
 		)
 
-		const ratingStringsForExperienced = ratingForExperienced.map(
-			(player, index) => {
-				const emoji = index === 0 ? '👑' : ''
-				return `${index + 1}.${emoji} ${player.heroName}  -  🏅 <b>${
-					player.playerLevel
-				}</b>  ⭐️ <b>${player.expCount} / ${player.newExp}</b>`
-			}
-		)
+		const ratingStringsForExperienced = ratingForExperienced.map((player, index) => {
+			const emoji = index === 0 ? '👑' : ''
+			return `${index + 1}.${emoji} ${player.heroName}  -  🏅 <b>${
+				player.playerLevel
+			}</b>  ⭐️ <b>${player.expCount} / ${player.newExp}</b>`
+		})
 
 		const ratingMessageForExperienced =
 			ratingStringsForExperienced.length > 0
 				? ratingStringsForExperienced.join('\n')
 				: '<i>‼ No players found ‼</i>'
 
-		await ctx.reply(
-			`⛏<b>Most experienced players</b>⛏\n\n${ratingMessageForExperienced}`,
-			{ parse_mode: 'HTML' }
-		)
+		await ctx.reply(`⛏<b>Most experienced players</b>⛏\n\n${ratingMessageForExperienced}`, {
+			parse_mode: 'HTML'
+		})
 	}
 
-	private handleTopsCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleTopsCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -582,17 +522,12 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 		const limitUsers: number = 3
 
 		/////////////////////////////////////////////// For riches
 
-		let ratingForRichest = await this.database.findAllRichestPlayers(
-			ctx.message.chat.id
-		)
+		let ratingForRichest = await this.database.findAllRichestPlayers(ctx.message.chat.id)
 
 		const currentUserIndexRichest = ratingForRichest.findIndex(
 			player => player.userId === ctx.message.from.id
@@ -640,20 +575,18 @@ See /help for all available commands in the game.
 
 		ratingForExperienced = ratingForExperienced.slice(0, limitUsers)
 
-		const ratingStringsForExperienced = ratingForExperienced.map(
-			(player, index) => {
-				let emoji = ''
-				if (index === 0) {
-					emoji = '🥇'
-				} else if (index === 1) {
-					emoji = '🥈'
-				} else if (index === 2) {
-					emoji = '🥉'
-				}
-
-				return `${emoji} ${player.heroName}  -  🏅 <b>${player.playerLevel}</b>  ⭐️ <b>${player.expCount} / ${player.newExp}</b>`
+		const ratingStringsForExperienced = ratingForExperienced.map((player, index) => {
+			let emoji = ''
+			if (index === 0) {
+				emoji = '🥇'
+			} else if (index === 1) {
+				emoji = '🥈'
+			} else if (index === 2) {
+				emoji = '🥉'
 			}
-		)
+
+			return `${emoji} ${player.heroName}  -  🏅 <b>${player.playerLevel}</b>  ⭐️ <b>${player.expCount} / ${player.newExp}</b>`
+		})
 
 		const ratingMessageForExperienced =
 			ratingStringsForExperienced.length > 0
@@ -672,13 +605,13 @@ See /help for all available commands in the game.
 		await ctx.reply(
 			`⛏<b>Richest players</b>⛏\n\n${ratingMessageForRichest} \n\n <b>${currentUserPlaceRichest}</b>
 \n\n\n⛏<b>Most experienced players</b>⛏\n\n${ratingMessageForExperienced}\n\n <b>${currentUserPlaceExperienced}</b>`,
-			{ parse_mode: 'HTML' }
+			{
+				parse_mode: 'HTML'
+			}
 		)
 	}
 
-	private handleTopSendCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleTopSendCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -689,14 +622,9 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
-		const ratingForGenerous = await this.database.findAllSenders(
-			ctx.message.chat.id
-		)
+		const ratingForGenerous = await this.database.findAllSenders(ctx.message.chat.id)
 
 		const ratingStringsForGenerous = ratingForGenerous.map((player, index) => {
 			const emoji = index === 0 ? '🤑' : ''
@@ -715,9 +643,7 @@ See /help for all available commands in the game.
 		})
 	}
 
-	private handleTopReceiptCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleTopReceiptCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -728,14 +654,9 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
-		const ratingForHappiest = await this.database.findAllReceivers(
-			ctx.message.chat.id
-		)
+		const ratingForHappiest = await this.database.findAllReceivers(ctx.message.chat.id)
 
 		const ratingStringsForHappiest = ratingForHappiest.map((player, index) => {
 			const emoji = index === 0 ? '💸' : ''
@@ -749,17 +670,12 @@ See /help for all available commands in the game.
 				? ratingStringsForHappiest.join('\n')
 				: '<i>‼ No players found ‼</i>'
 
-		await ctx.reply(
-			`⛏<b>Top recipients</b>⛏\n\n${ratingMessageForHappiest}`,
-			{
-				parse_mode: 'HTML'
-			}
-		)
+		await ctx.reply(`⛏<b>Top recipients</b>⛏\n\n${ratingMessageForHappiest}`, {
+			parse_mode: 'HTML'
+		})
 	}
 
-	private handleTopsTransferCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleTopsTransferCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -770,17 +686,12 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 		const limitUsers: number = 3
 
 		/////////////////////////////////////////////// For senders
 
-		let ratingForSenders = await this.database.findAllSenders(
-			ctx.message.chat.id
-		)
+		let ratingForSenders = await this.database.findAllSenders(ctx.message.chat.id)
 
 		const findCurrentUserData = ratingForSenders.find(
 			player => player.userId === ctx.message.from.id
@@ -819,9 +730,7 @@ See /help for all available commands in the game.
 
 		/////////////////////////////////////////////// For receivers
 
-		let ratingForReceivers = await this.database.findAllReceivers(
-			ctx.message.chat.id
-		)
+		let ratingForReceivers = await this.database.findAllReceivers(ctx.message.chat.id)
 
 		const currentUserIndexReceivers = ratingForReceivers.findIndex(
 			player => player.userId === ctx.message.from.id
@@ -829,20 +738,18 @@ See /help for all available commands in the game.
 
 		ratingForReceivers = ratingForReceivers.slice(0, limitUsers)
 
-		const ratingStringsForReceivers = ratingForReceivers.map(
-			(player, index) => {
-				let emoji = ''
-				if (index === 0) {
-					emoji = '🥇'
-				} else if (index === 1) {
-					emoji = '🥈'
-				} else if (index === 2) {
-					emoji = '🥉'
-				}
-
-				return `${emoji} ${player.heroName}  -  <b>${player.amountOfReceivedCoins}</b>💰  <b>(${player.counterOfReceivedCoins})</b>`
+		const ratingStringsForReceivers = ratingForReceivers.map((player, index) => {
+			let emoji = ''
+			if (index === 0) {
+				emoji = '🥇'
+			} else if (index === 1) {
+				emoji = '🥈'
+			} else if (index === 2) {
+				emoji = '🥉'
 			}
-		)
+
+			return `${emoji} ${player.heroName}  -  <b>${player.amountOfReceivedCoins}</b>💰  <b>(${player.counterOfReceivedCoins})</b>`
+		})
 
 		const ratingMessageForReceivers =
 			ratingStringsForReceivers.length > 0
@@ -861,13 +768,13 @@ See /help for all available commands in the game.
 		await ctx.reply(
 			`⛏<b>Top senders</b>⛏\n\n${ratingMessageForSenders} \n\n <b>${currentUserPlaceSenders}</b>
 \n\n\n⛏<b>Top recipients</b>⛏\n\n${ratingMessageForReceivers}\n\n <b>${currentUserPlaceReceivers}</b>`,
-			{ parse_mode: 'HTML' }
+			{
+				parse_mode: 'HTML'
+			}
 		)
 	}
 
-	private handleTopDonateFundCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleTopDonateFundCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -878,14 +785,9 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
-		const ratingForDonate = await this.database.findAllTheDonatedPlayers(
-			ctx.message.chat.id
-		)
+		const ratingForDonate = await this.database.findAllTheDonatedPlayers(ctx.message.chat.id)
 
 		const ratingStringsForDonate = ratingForDonate.map((player, index) => {
 			const emoji = index === 0 ? '👼' : ''
@@ -904,9 +806,7 @@ See /help for all available commands in the game.
 		})
 	}
 
-	private handleSellCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleSellCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -917,10 +817,7 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		const user = await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		const user = await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
 		const sellRegex = /^\/sell\s+(-?\d+?)?$/
 		const sellMatch = sellRegex.exec(ctx.message.text || '')
@@ -947,29 +844,22 @@ See /help for all available commands in the game.
 			} else {
 				const coins = amount * 5
 
-				await ctx.reply(
-					`You sold <b>${amount}</b> 💎 and received <b>${coins}</b> 💰`,
-					{
-						parse_mode: 'HTML'
-					}
-				)
-				console.log(
-					`@${ctx.message.from.username}: sold ${amount} gems -> ${coins} coins`
-				)
+				await ctx.reply(`You sold <b>${amount}</b> 💎 and received <b>${coins}</b> 💰`, {
+					parse_mode: 'HTML'
+				})
+				console.log(`@${ctx.message.from.username}: sold ${amount} gems -> ${coins} coins`)
 
-				await this.database.updateUser(
-					ctx.message.from.id,
-					ctx.message.chat.id,
-					{
-						gemsCount: user.gemsCount - amount,
-						moneyCount: user.moneyCount + coins
-					}
-				)
+				await this.database.updateUser(ctx.message.from.id, ctx.message.chat.id, {
+					gemsCount: user.gemsCount - amount,
+					moneyCount: user.moneyCount + coins
+				})
 			}
 		} else {
 			await ctx.reply(
 				`You can exchange your 💎 for 💰 (1 : 5)\nYour bag: <b>${user.gemsCount}</b> 💎\n\n‼ Use: /sell <code>AMOUNT</code> to sell ‼`,
-				{ parse_mode: 'HTML' }
+				{
+					parse_mode: 'HTML'
+				}
 			)
 			console.log(
 				`@${ctx.message.from.username}: entered the /sell command without additional parameters`
@@ -978,9 +868,7 @@ See /help for all available commands in the game.
 		}
 	}
 
-	private handleSendCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleSendCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -991,10 +879,7 @@ See /help for all available commands in the game.
 		}
 		this.lastCommandTime = currentTime
 
-		const user = await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			ctx.message.chat.id
-		)
+		const user = await this.database.getOrCreateUser(ctx.message.from.id, ctx.message.chat.id)
 
 		const sendRegex = /^\/send\s+(-?\d+?)?$/
 		const sendMatch = sendRegex.exec(ctx.message.text || '')
@@ -1025,7 +910,9 @@ Use "/send <code>AMOUNT</code>" command in reply to a message to make a transfer
 					'▫200💰 and more ⇒ <b>0.5%</b>' +
 					'\n\n⚠ Minimal transfer is <b>5💰</b>' +
 					`\n⚠ Transfer limit - ${transferTimerText}`,
-				{ parse_mode: 'HTML' }
+				{
+					parse_mode: 'HTML'
+				}
 			)
 			return
 		}
@@ -1036,10 +923,7 @@ Use "/send <code>AMOUNT</code>" command in reply to a message to make a transfer
 			let commission: number
 			/// let word = amount === 1 || amount === -1 ? 'coin' : 'coins';
 
-			const ensurePlayerExists = await this.database.ensurePlayerExists(
-				recipient,
-				chatId
-			)
+			const ensurePlayerExists = await this.database.ensurePlayerExists(recipient, chatId)
 
 			if (amount < 100) {
 				commission = Math.floor(1 + (amount * 2) / 100)
@@ -1057,7 +941,9 @@ Use "/send <code>AMOUNT</code>" command in reply to a message to make a transfer
 					`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
 Receiver: <b>${user.heroName}</b> 👾\nAmount: <b>${amount}💰</b>\nService fee: <b>${commission}💰</b>
 To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Transferring itself is impossible</u></b>`,
-					{ parse_mode: 'HTML' }
+					{
+						parse_mode: 'HTML'
+					}
 				)
 				return
 			}
@@ -1067,7 +953,9 @@ To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Transferring itself 
 					`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
 Receiver: <b>unknown</b>\nAmount: <b>${amount}💰</b>\nService fee: <b>${commission}💰</b>
 To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Receiver not found</u></b>`,
-					{ parse_mode: 'HTML' }
+					{
+						parse_mode: 'HTML'
+					}
 				)
 				console.log(
 					`@${ctx.message.from.username} made a transfer of coins to a non-existent player`
@@ -1079,7 +967,9 @@ To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Receiver not found</
 						`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
 Receiver: <b>${ensurePlayerExists.heroName}</b> 👾\nAmount: <b>${amount}💰</b>\nService fee: <b>${commission}💰</b>
 To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Not enough money</u></b>`,
-						{ parse_mode: 'HTML' }
+						{
+							parse_mode: 'HTML'
+						}
 					)
 					console.log(
 						`@${ctx.message.from.username} wanted to send more coins than he has`
@@ -1090,7 +980,9 @@ To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Not enough money</u>
 						`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
 Receiver: <b>${ensurePlayerExists.heroName}</b> 👾\nAmount: <b>${amount}💰</b>\nService fee: <b>${commission}💰</b>
 To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Minimal transfer amount is 5💰</u></b>`,
-						{ parse_mode: 'HTML' }
+						{
+							parse_mode: 'HTML'
+						}
 					)
 					return
 				} else if (amount <= 0 || isNaN(amount)) {
@@ -1098,7 +990,9 @@ To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Minimal transfer amo
 						`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
 Receiver: <b>${ensurePlayerExists.heroName}</b> 👾\nAmount: <b>${amount}💰</b>\nService fee: <b>${commission}💰</b>
 To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Invalid amount</u></b>`,
-						{ parse_mode: 'HTML' }
+						{
+							parse_mode: 'HTML'
+						}
 					)
 					console.log(
 						`@${ctx.message.from.username} entered an invalid value for transferring coins!`
@@ -1119,7 +1013,9 @@ To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Invalid amount</u></
 							`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
 Receiver: <b>${ensurePlayerExists.heroName}</b> 👾\nAmount: <b>${amount}💰</b>\nService fee: <b>${commission}💰</b>
 To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Transfer limit exceeded</u></b>\nTry again in: <b><i>${remainingMinutes}m ${remainingSecs}s</i></b> ⏱`,
-							{ parse_mode: 'HTML' }
+							{
+								parse_mode: 'HTML'
+							}
 						)
 					} else {
 						await ctx.reply('⚠️ Transfer limit exceeded! ⚠️')
@@ -1164,15 +1060,15 @@ Use "/send <code>AMOUNT</code>" command in reply to a message to make a transfer
 					'▫200💰 and more ⇒ <b>0.5%</b>' +
 					'\n\n⚠ Minimal transfer is <b>5💰</b>' +
 					`\n⚠ Transfer limit - ${transferTimerText}`,
-				{ parse_mode: 'HTML' }
+				{
+					parse_mode: 'HTML'
+				}
 			)
 			return
 		}
 	}
 
-	private handlePaymentConfirmClick = async (
-		ctx: CallbackQueryContext<Context>
-	) => {
+	private handlePaymentConfirmClick = async (ctx: CallbackQueryContext<Context>) => {
 		if (!ctx.chat) {
 			return
 		}
@@ -1184,26 +1080,14 @@ Use "/send <code>AMOUNT</code>" command in reply to a message to make a transfer
 			return
 		}
 
-		const [
-			buttonId,
-			senderId,
-			receiverId,
-			amount,
-			commission,
-			amountWithCommission
-		] = data.split('~')
+		const [buttonId, senderId, receiverId, amount, commission, amountWithCommission] =
+			data.split('~')
 
 		const user = await this.database.getOrCreateUser(callbackQueryUser, chatId)
 
-		const receiver = await this.database.ensurePlayerExists(
-			Number(receiverId),
-			chatId
-		)
+		const receiver = await this.database.ensurePlayerExists(Number(receiverId), chatId)
 
-		const chat = await this.database.getOrCreateChat(
-			chatId,
-			this.dropCoinFunc.bind(this)
-		)
+		const chat = await this.database.getOrCreateChat(chatId, this.dropCoinFunc.bind(this))
 
 		if (receiver === null) {
 			return
@@ -1244,7 +1128,9 @@ Use "/send <code>AMOUNT</code>" command in reply to a message to make a transfer
 					`✅ SENT ✅\n--------------------\nSender: <b>${user.heroName}</b> 👾\nReceiver: <b>${receiver.heroName}</b> 👾
 Amount: <b>${amount}💰</b>\nService fee: <b>${commission}</b>💰\nTo pay: <b>${amountWithCommission}</b>💰
 \n/profile to see balance`,
-					{ parse_mode: 'HTML' }
+					{
+						parse_mode: 'HTML'
+					}
 				)
 				console.log(
 					`@${ctx.callbackQuery.from.username} (${senderId}) transferred ${amount} coins to @${receiver.heroName} (${receiverId})`
@@ -1266,9 +1152,7 @@ Amount: <b>${amount}💰</b>\nService fee: <b>${commission}</b>💰\nTo pay: <b>
 		await ctx.deleteMessage()
 	}
 
-	private handleDonateFundCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleDonateFundCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -1280,10 +1164,7 @@ Amount: <b>${amount}💰</b>\nService fee: <b>${commission}</b>💰\nTo pay: <b>
 		this.lastCommandTime = currentTime
 
 		const chatId = ctx.message.chat.id
-		const user = await this.database.getOrCreateUser(
-			ctx.message.from.id,
-			chatId
-		)
+		const user = await this.database.getOrCreateUser(ctx.message.from.id, chatId)
 
 		const sendRegex = /^\/donate\s+(-?\d+?)?$/
 		const sendMatch = sendRegex.exec(ctx.message.text || '')
@@ -1296,17 +1177,19 @@ Amount: <b>${amount}💰</b>\nService fee: <b>${commission}</b>💰\nTo pay: <b>
 				await ctx.reply(
 					`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
 Receiver: <b>Dwarven Bank</b> 🛖\nDonate: <b>${amount}</b>💰\n\n<b>Reason: <u>Not enough money</u></b>`,
-					{ parse_mode: 'HTML' }
+					{
+						parse_mode: 'HTML'
+					}
 				)
-				console.log(
-					`@${ctx.message.from.username} wanted to donate more coins than he has`
-				)
+				console.log(`@${ctx.message.from.username} wanted to donate more coins than he has`)
 				return
 			} else if (amount < 1 || isNaN(amount)) {
 				await ctx.reply(
 					`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
 Receiver: <b>Dwarven Bank</b> 🛖\nDonate: <b>${amount}</b>💰\n\n<b>Reason: <u>Invalid amount</u></b>`,
-					{ parse_mode: 'HTML' }
+					{
+						parse_mode: 'HTML'
+					}
 				)
 				console.log(
 					`@${ctx.message.from.username} entered an invalid value for transferring coins!`
@@ -1341,15 +1224,15 @@ Donate: <b>${amount}</b>💰\n\nConfirm donate?`,
 			await ctx.reply(
 				`You can donate money 💰 to the charity /fund of the 🛖 <b>Dwarven Bank</b>
 Use "/donate <code>AMOUNT</code>" command to make a donation`,
-				{ parse_mode: 'HTML' }
+				{
+					parse_mode: 'HTML'
+				}
 			)
 			return
 		}
 	}
 
-	private handleDonateFundConfirmClick = async (
-		ctx: CallbackQueryContext<Context>
-	) => {
+	private handleDonateFundConfirmClick = async (ctx: CallbackQueryContext<Context>) => {
 		const callbackQueryUser = ctx.callbackQuery.from.id
 		const data = ctx.callbackQuery.data
 
@@ -1359,10 +1242,7 @@ Use "/donate <code>AMOUNT</code>" command to make a donation`,
 
 		const [buttonId, senderId, chatId, amount] = data.split('~')
 
-		const user = await this.database.getOrCreateUser(
-			callbackQueryUser,
-			Number(chatId)
-		)
+		const user = await this.database.getOrCreateUser(callbackQueryUser, Number(chatId))
 
 		const chat = await this.database.getOrCreateChat(
 			Number(chatId),
@@ -1396,7 +1276,9 @@ Use "/donate <code>AMOUNT</code>" command to make a donation`,
 				await ctx.reply(
 					`✅ SENT ✅\n--------------------\nSender: <b>${user.heroName}</b> 👾\nReceiver: <b>Dwarven Bank</b> 🛖
 Donate: <b>${amount}</b>💰\n\n/profile to see balance`,
-					{ parse_mode: 'HTML' }
+					{
+						parse_mode: 'HTML'
+					}
 				)
 				console.log(
 					`@${ctx.callbackQuery.from.username} (${senderId}) transferred ${amount} coins to "🛖 Сharitable foundation for dwarves in need"`
@@ -1418,24 +1300,15 @@ Donate: <b>${amount}</b>💰\n\n/profile to see balance`,
 		await ctx.deleteMessage()
 	}
 
-	private CheckFundBalance = async (
-		ctx: CallbackQueryContext<Context>,
-		chatId: number
-	) => {
-		const chat = await this.database.getOrCreateChat(
-			chatId,
-			this.dropCoinFunc.bind(this)
-		)
+	private CheckFundBalance = async (ctx: CallbackQueryContext<Context>, chatId: number) => {
+		const chat = await this.database.getOrCreateChat(chatId, this.dropCoinFunc.bind(this))
 		const findAllUsers = await this.database.findAllPlayers(chatId)
 		const amountHappiestPlayers: number = 3
 
 		const fromBank = Math.floor((80 * chat.bankBalance) / 100)
 		const totalFund = chat.fundBalance + fromBank
 
-		if (
-			totalFund < chat.fundGoal ||
-			findAllUsers.length < amountHappiestPlayers
-		) {
+		if (totalFund < chat.fundGoal || findAllUsers.length < amountHappiestPlayers) {
 			return
 		}
 
@@ -1450,10 +1323,7 @@ Donate: <b>${amount}</b>💰\n\n/profile to see balance`,
 		for (let i = 0; i < amountHappiestPlayers; i++) {
 			do {
 				randomIndex = randomInteger(0, findAllUsers.length - 1)
-			} while (
-				randomIndex == checkFirstIndex ||
-				randomIndex == checkSecondIndex
-			)
+			} while (randomIndex == checkFirstIndex || randomIndex == checkSecondIndex)
 
 			selectedPlayer = findAllUsers[randomIndex]
 
@@ -1464,21 +1334,19 @@ Donate: <b>${amount}</b>💰\n\n/profile to see balance`,
 				fundBalance: 0
 			})
 
-			i == 0
-				? (checkFirstIndex = randomIndex)
-				: (checkSecondIndex = randomIndex)
+			i == 0 ? (checkFirstIndex = randomIndex) : (checkSecondIndex = randomIndex)
 			strPlayer.push(`<b>${selectedPlayer.heroName}</b>`)
 		}
 
 		await ctx.reply(
 			`🛖 Foundation of the <b>Dwarven Bank</b> has been withdrawn!\n
-Dwarfs got <b>${perUser}💰</b> each, for a total withdrawal of <b>${
-				perUser * 3
-			}💰</b>:
+Dwarfs got <b>${perUser}💰</b> each, for a total withdrawal of <b>${perUser * 3}💰</b>:
 1. ${strPlayer[0]} 👾
 2. ${strPlayer[1]} 👾
 3. ${strPlayer[2]} 👾`,
-			{ parse_mode: 'HTML' }
+			{
+				parse_mode: 'HTML'
+			}
 		)
 	}
 
@@ -1493,27 +1361,26 @@ Dwarfs got <b>${perUser}💰</b> each, for a total withdrawal of <b>${
 		const user = await this.database.getOrCreateUser(callbackQueryUser, chatId)
 
 		const pickedCoins = randomInteger(1, 10)
+		const word = pickedCoins === 1 || pickedCoins === -1 ? 'coin' : 'coins'
 
 		await this.database.updateUser(user.userId, user.chatId, {
 			moneyCount: user.moneyCount + pickedCoins
 		})
 
 		await ctx.editMessageText(
-			`You see coins on the ground, a treasure waiting to be found 🪙\n\n<i>${user.heroName} picked up ${pickedCoins}💰 coins</i>`,
+			`You see coins on the ground, a treasure waiting to be found 🪙\n\n<i>${user.heroName} picked up ${pickedCoins}💰 ${word}</i>`,
 			{
 				parse_mode: 'HTML'
 			}
 		)
 
 		await ctx.answerCallbackQuery({
-			text: `You pick up the coins, feeling their weight in your hand. A treasure found, a fortune grand. You got ${pickedCoins} 💰`,
+			text: `You pick up the coins, feeling their weight in your hand. A treasure found, a fortune grand. You got ${pickedCoins} 💰 ${word}`,
 			show_alert: true
 		})
 	}
 
-	private handleShowFundBalanceCommand = async (
-		ctx: CommandContext<Context>
-	): Promise<void> => {
+	private handleShowFundBalanceCommand = async (ctx: CommandContext<Context>): Promise<void> => {
 		if (ctx.message === undefined) {
 			return
 		}
@@ -1528,10 +1395,7 @@ Dwarfs got <b>${perUser}💰</b> each, for a total withdrawal of <b>${
 
 		await this.database.getOrCreateUser(ctx.message.from.id, chatId)
 
-		const chat = await this.database.getOrCreateChat(
-			chatId,
-			this.dropCoinFunc.bind(this)
-		)
+		const chat = await this.database.getOrCreateChat(chatId, this.dropCoinFunc.bind(this))
 		const fromBank = Math.floor(chat.bankBalance * (80 / 100))
 		const total = fromBank + chat.fundBalance
 
@@ -1543,7 +1407,9 @@ Left for withdrawal: <b>${chat.fundGoal - total}💰</b>\n\n
 ▫80% of service fees automatically goes to the Fund balance.
 ▫Use /donate to make a donation.\n
 ⚠️ Feature is still under development so balance can be bigger than capacity for the first time`,
-			{ parse_mode: 'HTML' }
+			{
+				parse_mode: 'HTML'
+			}
 		)
 	}
 }

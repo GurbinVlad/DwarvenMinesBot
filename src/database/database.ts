@@ -32,10 +32,7 @@ export class Database {
 		}
 	}
 
-	async getOrCreateUser(
-		userId: Player['userId'],
-		chatId: Player['chatId']
-	): Promise<Player> {
+	async getOrCreateUser(userId: Player['userId'], chatId: Player['chatId']): Promise<Player> {
 		const result = await this.players.findOne({ userId, chatId })
 
 		if (result === null) {
@@ -130,7 +127,6 @@ export class Database {
 			(a, b) => b.playerLevel * 1000 + b.expCount - (a.playerLevel * 1000 + a.expCount)
 		)
 	}
-
 	async ifUpdateLevel(
 		ctx: CommandContext<Context>,
 		messageFromId: number,
