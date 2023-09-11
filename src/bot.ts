@@ -1330,13 +1330,15 @@ Donate: <b>${amount}</b>💰\n\n/profile to see balance`,
 			await this.database.updateUser(selectedPlayer.userId, chatId, {
 				moneyCount: selectedPlayer.moneyCount + perUser
 			})
-			await this.database.updateChat(chatId, {
-				fundBalance: 0
-			})
 
 			i == 0 ? (checkFirstIndex = randomIndex) : (checkSecondIndex = randomIndex)
 			strPlayer.push(`<b>${selectedPlayer.heroName}</b>`)
 		}
+
+		await this.database.updateChat(chatId, {
+			bankBalance: chat.bankBalance - fromBank,
+			fundBalance: 0
+		})
 
 		await ctx.reply(
 			`🛖 Foundation of the <b>Dwarven Bank</b> has been withdrawn!\n
