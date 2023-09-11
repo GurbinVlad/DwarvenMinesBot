@@ -890,7 +890,7 @@ See /help for all available commands in the game.
 		let transferTimer: number
 		let transferTimerText: string
 
-		if (user.playerLevel > 10 && user.playerLevel < 20) {
+		if (user.playerLevel >= 10) {
 			transferTimer = 0.5
 			transferTimerText = '<b>1</b> transfer within <b>30</b> minutes ⏱'
 		} else {
@@ -1166,11 +1166,11 @@ Amount: <b>${amount}💰</b>\nService fee: <b>${commission}</b>💰\nTo pay: <b>
 		const chatId = ctx.message.chat.id
 		const user = await this.database.getOrCreateUser(ctx.message.from.id, chatId)
 
-		const sendRegex = /^\/donate\s+(-?\d+?)?$/
+		const sendRegex = /^\/(donate|donate@DwarvenMinesBot)\s+(-?\d+?)?$/
 		const sendMatch = sendRegex.exec(ctx.message.text || '')
 
-		if (sendMatch && sendMatch[1]) {
-			const amount = Number(sendMatch[1])
+		if (sendMatch && sendMatch[2]) {
+			const amount = Number(sendMatch[2])
 			/// let word = amount === 1 || amount === -1 ? 'coin' : 'coins';
 
 			if (amount > user.moneyCount) {
