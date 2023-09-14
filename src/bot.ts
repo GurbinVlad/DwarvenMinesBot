@@ -1102,6 +1102,22 @@ Use "/send <code>AMOUNT</code>" command in reply to a message to make a transfer
 
 		switch (buttonId) {
 			case 'confirm': {
+				if (Number(amountWithCommission) > user.moneyCount) {
+					await ctx.reply(
+						`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
+Receiver: <b>${receiver.heroName}</b> 👾\nAmount: <b>${amount}💰</b>\nService fee: <b>${commission}💰</b>
+To pay: <b>${amountWithCommission}</b>💰\n\n<b>Reason: <u>Not enough money</u></b>`,
+						{
+							parse_mode: 'HTML'
+						}
+					)
+					console.log(
+						`@${ctx.callbackQuery.from.username} wanted to send more coins than he has`
+					)
+					await ctx.deleteMessage()
+					return
+				}
+
 				await ctx.answerCallbackQuery({
 					text: '✅ SENT ✅',
 					show_alert: true
@@ -1200,7 +1216,7 @@ Receiver: <b>Dwarven Bank</b> 🛖\nDonate: <b>${amount}</b>💰\n\n<b>Reason: <
 			const senderId = ctx.from.id
 
 			await ctx.reply(
-				`⚜ DONATION ⚜\n----------------------\nSender: <b>${user.heroName}</b> 👾\nReceiver: <b>Dwarven Bank</b> 🛖
+				`⚜ DONATION ⚜\n---------------------------\nSender: <b>${user.heroName}</b> 👾\nReceiver: <b>Dwarven Bank</b> 🛖
 Donate: <b>${amount}</b>💰\n\nConfirm donate?`,
 				{
 					reply_markup: {
@@ -1258,6 +1274,21 @@ Use "/donate <code>AMOUNT</code>" command to make a donation`,
 
 		switch (buttonId) {
 			case 'confirmDonate': {
+				if (Number(amount) > user.moneyCount) {
+					await ctx.reply(
+						`⚠️ REJECTED ⚠️\n---------------------------\nSender: <b>${user.heroName}</b> 👾
+Receiver: <b>Dwarven Bank</b> 🛖\nDonate: <b>${amount}</b>💰\n\n<b>Reason: <u>Not enough money</u></b>`,
+						{
+							parse_mode: 'HTML'
+						}
+					)
+					console.log(
+						`@${ctx.callbackQuery.from.username} wanted to donate more coins than he has`
+					)
+					await ctx.deleteMessage()
+					return
+				}
+
 				await ctx.answerCallbackQuery({
 					text: '✅ SENT ✅',
 					show_alert: true
