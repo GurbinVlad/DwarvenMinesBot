@@ -1393,7 +1393,7 @@ Dwarfs got <b>${perUser}🪙</b> each, for a total withdrawal of <b>${totalFund}
 
 		if (totalFundRepeat >= updatedChat.fundGoal) {
 			await ctx.reply(
-				`🔁80% of the bank's balance, after the distribution of donations, still exceeds the set goal of the Charity Fund! (it is -> ${updatedChat.fundGoal}🪙)
+				`🔁80% of the bank's balance, after the distribution of donations, still exceeds the set goal of the Charity fund! (it is -> ${updatedChat.fundGoal}🪙)
 🔁Soon, we will be distributing donations to the needy dwarves again!`
 			)
 			await this.checkFundBalance(ctx, chatId)
@@ -1455,7 +1455,7 @@ The next goal after the donations were distributed was: ${updatedChat.fundGoal} 
 		const fromBank = Math.floor(chat.bankBalance * (80 / 100))
 		const total = fromBank + chat.fundBalance
 
-		const message = `<b>Charity Fund of the 🛖 Dwarven Bank</b>\n
+		const message = `<b>Charity fund of the 🛖 Dwarven Bank</b>\n
 ▹ Goal: <b>${chat.fundGoal}🪙</b>\n▹ Balance: <b>${total}🪙</b>
 ▹ Left for withdrawal: <b>${chat.fundGoal - total}🪙</b>\n\n ➡-➡-↘
 ▫After the fund reaches its maximum, all the funds raised will be distributed to 3 needy dwarves in the group.
