@@ -131,6 +131,25 @@ See /help for all available commands in the game 👀
 			return
 		}
 
+		const setMineRegex = /^\/mine\s+([\p{L}]+(?:\s+[\p{L}]+)*)$/iu
+		const messageText = ctx.message.text?.trim() || ''
+		const match = messageText.match(setMineRegex)
+		let location = null
+
+		if (match) {
+			location = match[1]
+			if (location.length < 3 || location.length > 25) {
+				await ctx.reply(
+					`🗺You have asked cartographer about <b>«${location.slice(0, 25)}...»</b> but it took so long that he fell asleep 💤💤💤\n\n` +
+						`🔄Try something else! (min. 3, max. 25 letters) ⌨️🔤`,
+					{
+						parse_mode: 'HTML'
+					}
+				)
+				return
+			}
+		}
+
 		const currentTime = Date.now() / 1000
 		if (currentTime - this.lastCommandTime < 1) {
 			return
@@ -201,7 +220,8 @@ See /help for all available commands in the game 👀
 			const { message, photoPath } = await randomSituationInMines(
 				user.heroName,
 				-user.gemsCount,
-				exp
+				exp,
+				location
 			)
 			console.log(
 				`${username}: ${isFoundWord} ${-user.gemsCount} ${gemsWord}, and received +${exp} EXP.`
@@ -220,7 +240,8 @@ See /help for all available commands in the game 👀
 			const { message, photoPath } = await randomSituationInMines(
 				user.heroName,
 				user.baglimit - user.gemsCount,
-				exp
+				exp,
+				location
 			)
 			console.log(`${username}: ${isFoundWord} ${gems} ${gemsWord}, and +${exp} EXP.`)
 
@@ -235,7 +256,12 @@ See /help for all available commands in the game 👀
 				lastMined: new Date()
 			})
 
-			const { message, photoPath } = await randomSituationInMines(user.heroName, gems, exp)
+			const { message, photoPath } = await randomSituationInMines(
+				user.heroName,
+				gems,
+				exp,
+				location
+			)
 			console.log(`${username}: ${isFoundWord} ${gems} ${gemsWord}, and +${exp} EXP.`)
 
 			await ctx.replyWithPhoto(new InputFile(photoPath), {
@@ -361,7 +387,8 @@ See /help for all available commands in the game 👀
 			'📜Commands list📜\n' +
 			'\n▫/rules — Rules of the game' +
 			'\n▫/name <code>NAME</code> — Change dwarf name. Limit - 30 characters' +
-			'\n▫/mine — Go to mine' +
+			'\n▫/mine <code>[location]</code> — Go to mine. Additionally, can provide a specific location that comes to mind ' +
+			'(only letters are available for the location, limit - from 3 to 25 letters)' +
 			'\n▫/profile — Dwarf profile' +
 			'\n▫/top_help — list of accessible commands for rating with a brief description' +
 			'\n▫/sell <code>AMOUNT</code> — Exchange gems 💎 for coins 🪙 (/sell for info)' +

@@ -24,16 +24,31 @@ export function randomName() {
 	return `${name} ${characteristic}`
 }
 
-export async function randomSituationInMines(heroName: string, gems: number, exp: number) {
+export async function randomSituationInMines(
+	heroName: string,
+	gems: number,
+	exp: number,
+	location: any
+) {
 	let situations: string
 	let result: string
 	let photoPath: string
+	let generatedText: string
+	let textPrompt: string
 
 	if (gems > 0) {
 		// Text generation with OpenAI
-		const generatedText = await generateText(
-			`${heroName} is in the mine. Write a short, unique story where he finds ${gems}💎`
-		)
+		textPrompt = location
+			? `Write a unique story about the ${heroName} in the location ${location} . ` +
+				`The story should be completely based on the specifics of this location. ` +
+				`You must mention something very specific that could only happen in this location. ` +
+				`You can use any characters or details that could have happened there. ` +
+				`"${heroName}" found ${gems}💎, mention it in the story. ` +
+				`Only if the location name contains foul language, then you can also use foul language and write a story with it. ` +
+				`Be sure to answer in the same language of communication as the name of the place was written.`
+			: `${heroName} is in the mine. Write a short, unique story where they find ${gems}💎 .`
+
+		generatedText = await generateText(textPrompt)
 		situations =
 			generatedText == 'Error receiving from OpenAI API' ||
 			generatedText == 'Text not returned'
@@ -43,9 +58,17 @@ export async function randomSituationInMines(heroName: string, gems: number, exp
 		photoPath = 'src/Pictures/gemsFound.png'
 	} else if (gems < 0) {
 		gems *= -1
-		const generatedText = await generateText(
-			`${heroName} is in the mine. Write a short, unique story where he loses ${gems}💎`
-		)
+		textPrompt = location
+			? `Write a unique story about the ${heroName} in the location ${location} . ` +
+				`The story should be completely based on the specifics of this location. ` +
+				`You must mention something very specific that could only happen in this location. ` +
+				`You can use any characters or details that could have happened there. ` +
+				`"${heroName}" lost ${gems}💎, mention it in the story. ` +
+				`Only if the location name contains foul language, then you can also use foul language and write a story with it. ` +
+				`Be sure to answer in the same language of communication as the name of the place was written.`
+			: `${heroName} is in the mine. Write a short, unique story where they lost ${gems}💎 .`
+
+		generatedText = await generateText(textPrompt)
 		situations =
 			generatedText == 'Error receiving from OpenAI API' ||
 			generatedText == 'Text not returned'
@@ -54,9 +77,17 @@ export async function randomSituationInMines(heroName: string, gems: number, exp
 		result = `You received:  -${gems}💎 and ${exp}⭐️`
 		photoPath = 'src/Pictures/gemsLost.png'
 	} else {
-		const generatedText = await generateText(
-			`${heroName} is in the mine. Write a short, unique story in which he does not find any 💎`
-		)
+		textPrompt = location
+			? `Write a unique story about the ${heroName} in the location ${location} . ` +
+				`The story should be completely based on the specifics of this location. ` +
+				`You must mention something very specific that could only happen in this location. ` +
+				`You can use any characters or details that could have happened there. ` +
+				`"${heroName}" could not find any gems, mention this in the story, clearly stating that they found nothing. ` +
+				`Only if the location name contains foul language, then you can also use foul language and write a story with it. ` +
+				`Be sure to answer in the same language of communication as the name of the place was written.`
+			: `${heroName} is in the mine. Write a short, unique story in which they does not find gem.`
+
+		generatedText = await generateText(textPrompt)
 		situations =
 			generatedText == 'Error receiving from OpenAI API' ||
 			generatedText == 'Text not returned'

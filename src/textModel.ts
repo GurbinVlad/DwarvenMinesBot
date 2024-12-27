@@ -25,11 +25,11 @@ export const generateText = async (prompt: string): Promise<string> => {
 			model: 'gpt-4o-mini', // Model GPT-4o-mini
 			messages: [
 				{
-					role: 'system',
+					role: 'developer',
 					content:
-						'You create short, unique one-sentence stories about the events that happen to the gnomes in the mine.' +
-						'Each story should be creative and accurate.' +
-						'The number of gems must be mentioned in the story (for example, 10💎).'
+						'Instead of the words precious jewels, use only the emoticon 💎 in your story. Write the number of gems only in numerical form. ' +
+						"Be sure to use the character's name in the story. " +
+						'The story should be one sentence long.'
 				},
 				{ role: 'user', content: prompt }
 			]
