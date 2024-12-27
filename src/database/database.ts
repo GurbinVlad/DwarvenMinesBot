@@ -1,9 +1,9 @@
+import type { CommandContext, Context } from 'grammy'
 import type { Player, Chat } from './types.js'
 import type { Collection } from 'mongodb'
 import { MongoClient } from 'mongodb'
 import { randomName } from '../utilities.js'
-import type { CommandContext, Context } from 'grammy'
-import { Tasks } from '../tasks.js'
+import { Schedule } from '../schedule.js'
 
 export class Database {
 	private client: MongoClient
@@ -11,13 +11,13 @@ export class Database {
 	private chats: Collection<Chat>
 
 	constructor() {
-		if (!process.env.URL || !process.env.dbName) {
-			console.error('URL or dbName not found')
+		if (!process.env.DB_URL || !process.env.DB_NAME) {
+			console.error('DB_URL or DB_NAME not found')
 			process.exit(1)
 		}
 
-		this.client = new MongoClient(process.env.URL)
-		const mongoDb = this.client.db(process.env.dbName)
+		this.client = new MongoClient(process.env.DB_URL)
+		const mongoDb = this.client.db(process.env.DB_NAME)
 		this.players = mongoDb.collection('Players')
 		this.chats = mongoDb.collection('Chats')
 	}
@@ -25,9 +25,9 @@ export class Database {
 	async connect() {
 		try {
 			await this.client.connect()
-			console.log('Database connection successful Bro!')
+			console.log('Database connection successful!')
 		} catch (error) {
-			console.error('Database connection failed Bro:', error)
+			console.error('Database connection failed:', error)
 			process.exit(1)
 		}
 	}
@@ -81,7 +81,7 @@ export class Database {
 
 			const chat = await this.getOrCreateChat(chatId, dropCoinFunc)
 
-			await Tasks.scheduleCoinDropForChat(this, dropCoinFunc, new Date(), chatId)
+			await Schedule.scheduleCoinDropForChat(this, dropCoinFunc, new Date(), chatId)
 
 			return chat
 		}
@@ -114,14 +114,14 @@ export class Database {
 		return this.players.find({ chatId }).toArray()
 	}
 
-	async findAllRichestPlayers(chatId: Player['chatId']) {
+	async sortAllRichestPlayers(chatId: Player['chatId']) {
 		const result = await this.players.find({ chatId }).toArray()
 		return result.sort(
 			(a, b) => b.gemsCount * 5 + b.moneyCount - (a.gemsCount * 5 + a.moneyCount)
 		)
 	}
 
-	async findAllExperiencedPlayers(chatId: Player['chatId']) {
+	async sortAllExperiencedPlayers(chatId: Player['chatId']) {
 		const result = await this.players.find({ chatId }).toArray()
 		return result.sort(
 			(a, b) => b.playerLevel * 1000 + b.expCount - (a.playerLevel * 1000 + a.expCount)
@@ -140,14 +140,17 @@ export class Database {
 				await this.updateUser(messageFromId, messageFromChatId, {
 					playerLevel: user.playerLevel + 1,
 					baglimit: user.baglimit + 15,
-					newExp: user.newExp + 510
+					newExp: user.newExp + 710
 				})
 
 				await ctx.reply(
-					`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${
+					`<b>✨ Congratulations! ✨</b> \nYou have raised your level ! \n    🏅Your level: <b>${
 						user.playerLevel + 1
-					} 
-					\n\n📍Your bag capacity has been increased`
+					}</b> 🏅
+					\n\n⬆️ Your bag capacity has been increased \n⬆️ More transactions per hour`,
+					{
+						parse_mode: 'HTML'
+					}
 				)
 			} else if (user.playerLevel <= 10 && user.expCount >= user.newExp) {
 				await this.updateUser(messageFromId, messageFromChatId, {
@@ -167,10 +170,13 @@ export class Database {
 					})
 
 					await ctx.reply(
-						`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${
+						`<b>✨ Congratulations! ✨</b> \nYou have raised your level ! \n  🏅Your level: <b>${
 							user.playerLevel + 1
-						} 
-						\n\n📍Your bag capacity has been increased \n📍More trips to the mines are available to you`
+						}</b> 🏅
+						\n\n⬆️ Your bag capacity has been increased \n⬆️ More trips to the mines are available to you`,
+						{
+							parse_mode: 'HTML'
+						}
 					)
 				} else if (
 					user.playerLevel + 1 === 3 ||
@@ -183,10 +189,13 @@ export class Database {
 					})
 
 					await ctx.reply(
-						`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${
+						`<b>✨ Congratulations! ✨</b> \nYou have raised your level ! \n  🏅Your level: <b>${
 							user.playerLevel + 1
-						} 
-						\n\n📍Your bag capacity has been increased \n📍More trips to the mines are available to you`
+						}</b> 🏅
+						\n\n⬆️ Your bag capacity has been increased \n⬆️ More trips to the mines are available to you`,
+						{
+							parse_mode: 'HTML'
+						}
 					)
 				} else if (user.playerLevel + 1 === 5 || user.playerLevel + 1 === 10) {
 					await this.updateUser(messageFromId, messageFromChatId, {
@@ -194,10 +203,13 @@ export class Database {
 					})
 
 					await ctx.reply(
-						`✨ Congratulations! ✨ \nYou have raised your level. \n     🏅Your level: ${
+						`<b>✨ Congratulations! ✨</b> \nYou have raised your level ! \n  🏅Your level: <b>${
 							user.playerLevel + 1
-						} 
-						\n\n📍Your bag capacity has been increased \n📍More trips to the mines are available to you`
+						}</b> 🏅
+						\n\n⬆️ Your bag capacity has been increased \n⬆️ More trips to the mines are available to you`,
+						{
+							parse_mode: 'HTML'
+						}
 					)
 				}
 			}
@@ -214,7 +226,7 @@ export class Database {
 		return this.players.findOne({ userId: playerId, chatId: chatId })
 	}
 
-	async findAllSenders(chatId: Player['chatId']) {
+	async sortAllSenders(chatId: Player['chatId']) {
 		const result = await this.players.find({ chatId }).toArray()
 		return result.sort(
 			(a, b) =>
@@ -224,7 +236,7 @@ export class Database {
 		)
 	}
 
-	async findAllReceivers(chatId: Player['chatId']) {
+	async sortAllReceivers(chatId: Player['chatId']) {
 		const result = await this.players.find({ chatId }).toArray()
 		return result.sort(
 			(a, b) =>
@@ -234,7 +246,7 @@ export class Database {
 		)
 	}
 
-	async findAllTheDonatedPlayers(chatId: Player['chatId']) {
+	async sortAllTheDonatedPlayers(chatId: Player['chatId']) {
 		const result = await this.players.find({ chatId }).toArray()
 		return result.sort(
 			(a, b) =>

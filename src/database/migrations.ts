@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import type { Collection } from 'mongodb'
-import { MongoClient } from 'mongodb'
 import type { Player } from './types.js'
+import { MongoClient } from 'mongodb'
 import { config } from 'dotenv'
 
 config()
@@ -15,7 +14,7 @@ const client = new MongoClient(process.env.URL)
 const players: Collection<Player> = client.db(process.env.dbName).collection('Players')
 const chats: Collection<Player> = client.db(process.env.dbName).collection('Chats')
 
-async function addTransferData() {
+/*async function addTransferData() {
 	await players.updateMany(
 		{},
 		{
@@ -78,9 +77,9 @@ async function addTransferData() {
 			}
 		)
 	}
-}
+}*/
 
-async function addCoinScheduleTime() {
+/*async function addCoinScheduleTime() {
 	await chats.updateMany(
 		{},
 		{
@@ -89,7 +88,7 @@ async function addCoinScheduleTime() {
 			}
 		}
 	)
-}
+}*/
 
 async function setBankAndFundBalances() {
 	const toBankAmount = (amount: number) => {
@@ -124,7 +123,7 @@ try {
 	)
 	await client.connect()
 } catch (error) {
-	console.info('Database connection for migration failed! :', error)
+	console.info('Database connection for migration failed!:', error)
 	process.exit(1)
 }
 

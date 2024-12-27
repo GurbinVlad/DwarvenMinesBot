@@ -2,10 +2,10 @@ import type { Database } from './database/database.js'
 import { HOUR, MINUTE, randomInteger } from './utilities.js'
 import time from 'node-schedule'
 
-export class Tasks {
-	private static roundDateNumber(date: Date) {
+export class Schedule {
+	/*private static roundDateNumber(date: Date) {
 		return Number(new Date(date.toDateString()))
-	}
+	}*/
 
 	static async scheduleCoinDropForChat(
 		database: Database,
@@ -26,7 +26,7 @@ export class Tasks {
 		})
 
 		time.scheduleJob(coinDropDate, () => dropCoinFunc(chatId))
-		console.info(`Scheduled coin drop for chat ${chatId} at ${coinDropDate.toLocaleString()}`)
+		console.info(`Scheduled coins drop for chat ${chatId} at ${coinDropDate.toLocaleString()}`)
 	}
 
 	static async scheduleCoinDropForAllChats(
@@ -36,7 +36,6 @@ export class Tasks {
 		const chats = await database.getChats()
 
 		for (const chat of chats) {
-			// TODO: Schedule if missed
 			// if (
 			// 	this.roundDateNumber(chat.coinScheduledAt) === this.roundDateNumber(new Date())
 			// ) {
@@ -44,7 +43,7 @@ export class Tasks {
 			console.info(
 				`[STARTUP] Scheduled coin drop for chat ${
 					chat.chatId
-				} at ${chat.coinScheduledAt.toLocaleString()}`
+				} at ${chat.coinScheduledAt.toLocaleString()} !`
 			)
 			// } else {
 			// 	await this.scheduleCoinDropForChat(

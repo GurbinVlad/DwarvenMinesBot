@@ -1,5 +1,4 @@
-////////////////////////////////////////// To establish a name for a Dwarven
-
+/// To establish a name for a Dwarven
 export const names: string[] = [
 	'Gruff',
 	'Thorin',
@@ -55,12 +54,9 @@ export const characteristics: string[] = [
 	'the Legendary'
 ]
 
-//////////////////////////////////////////
-
-//////////////////////////////////////////  To establish situations in mines
-
-export const tempGems = 'zisismynenaytzisismynenayt'
-export const tempExp = 'comfygoodcomfygoodtivietyttivietyt'
+/// To establish situations in mines
+export const tempGems = 'gemsReplacement'
+export const tempExp = 'expReplacement'
 export const goodSituations: string[] = [
 	`dug in the mine for a long time and was finally able to get ${tempGems}.`,
 	`who had to fight the monsters in the mine finally won and found that some of them left behind ${tempGems}.`,
@@ -90,5 +86,3 @@ export const neutralSituations: string[] = [
 	'decided to make a sortie into the depths of the mine, but found nothing there but empty chambers and tunnels.',
 	'decided to take the wrong passage in the mine and lost his time, not finding a single gem.'
 ]
-
-//////////////////////////////////////////
